@@ -1,4 +1,10 @@
 
+
+# graph project
+
+source venv/bin/activate  # Linux/Mac
+venv\Scripts\activate     # Windows
+
 # chatting room and / or / vs / with  artific 
 application to send text messanges like: text, link 
 like chatting room 
