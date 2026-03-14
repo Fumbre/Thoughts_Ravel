@@ -24,8 +24,8 @@ net = Network(notebook=False, directed=False)
 net.from_nx(G)
 
 try:
-  net.save_graph("graph.html")
-  print("Файл успешно создан: graph.html")
+  net.save_graph("../nodes_ui.html")
+  print("Файл успешно создан: nodes_ui.html")
 except Exception as e:
   print(f"Ошибка: {e}")
 
