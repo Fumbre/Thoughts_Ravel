@@ -15,11 +15,11 @@ function reset() {
 <template>
   <main>
     <div class="container">
-      <h1>Vue + Electrobun</h1>
+      <h1> + Electrobusfssdfsdfdfn</h1>
       <p class="subtitle">A fast desktop app with hot module replacement</p>
 
       <div class="card">
-        <h2>Interactive Counter</h2>
+        <h2>Interactive Countffr</h2>
         <p>
           Click the button below to test Vue reactivity. With HMR enabled, you
           can edit this component and see changes instantly without losing state.

@@ -25,11 +25,9 @@ net.from_nx(G)
 
 try:
   # nodes UI as index.html for node
-  net.save_graph("../node/src/.html")
-  print("Файл успешно создан: nodes_ui.html")
+  net.save_graph("../front/src/index.html")
+  print("File created: index.html")
 except Exception as e:
-  print(f"Ошибка: {e}")
+  print(f"Error: {e}")
 
-# plt
-nx.draw(G, with_labels=True, node_color='skyblue', node_size=800)
-plt.show()
+

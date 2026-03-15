@@ -25,7 +25,7 @@ const url = await getMainViewUrl();
 
 const mainWindow = new BrowserWindow({
 	title: "Vue App",
-	url: "views://main/index.html",
+	url,
 	frame: {
 		width: 900,
 		height: 700,
@@ -33,6 +33,5 @@ const mainWindow = new BrowserWindow({
 		y: 200,
 	},
 });
-
 
 console.log("Vue app started!");
