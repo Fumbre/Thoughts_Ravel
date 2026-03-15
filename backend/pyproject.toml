@@ -13,6 +13,12 @@ dependencies = [
     "snowflake-id (>=1.0.2,<2.0.0)",
     "uvicorn (>=0.41.0,<0.42.0)",
     "python-dotenv (>=1.2.2,<2.0.0)",
+    "redis (==7.1.0)",
+    "pydantic==2.12.5",
+    "python-jose[cryptography]>=3.4,<4.0",
+    "sqlalchemy>=2.0,<3.0",
+    "asyncmy==0.2.11",
+    "passlib[argon2]>=1.7.4,<2.0",
 ]
 
 [tool.poetry]
