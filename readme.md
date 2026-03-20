@@ -1,63 +1,31 @@
-Microcontrollers like Pico can’t drive a speaker directly — speakers need amplified power
+
+# thoughs ravel
 
 
-A microphone produces a very small analog signal (millivolts) That's why we need mic with Amplifier
-A speaker needs power amplified to make sound
-The Pico’s GPIO pins can’t drive a speaker or read a mic level cleanly without an interface
+## frontend
+WEBKIT_DISABLE_COMPOSITING_MODE=1 bun start
 
-🎤 For microphone input
+## to do
+1. How to make it self-contained
 
-A mic produces a tiny analog signal (millivolts).
-The Pico’s ADC expects something stronger and cleaner.
+Bundle Vue with Vite → dist/.
 
-➡ We need a mic preamplifier board.
+Python is included in your app folder or installed as part of the package.
 
-🔊 For speaker output
+Electrobun runs a small script that:
 
-A speaker needs power (current) to move the cone.
+Starts Python backend (e.g., bun.spawn("python", ["backend/main.py"]))
 
-➡ We need a speaker amplifier board.
+Opens the WebView pointing to the local dist/index.html or Python URL
 
-These amplifier boards are small, cheap modules. We connect:
+When the app closes → you can terminate Python automatically.
 
-Mic → mic preamp board → Pico
+2.
 
-Pico → speaker amp board → speaker
+# graph project
 
-
-It can be one hardware device, but it still electrically has:
-
-One mic signal
-
-One speaker signal
-
-That we need to connect to speaker amplified board and to mic amplified board.
-
-Half-duplex
-
-So half-duplex is just a technology layer that we will use. Because it's simple and we don't need to have both audio in and out on the same time. 
-It means:
-
-We either transmit
-
-Or receive
-
-But not both at the same time
-
-Like a walkie-talkie 🙂 
-
-Mic amplifier
-
-MAX4466 Microphone Amplifier Module with Microphone - link [https://www.tinytronics.nl/en/sensors/sound/max4466-microfoon-amplifier-module-with-microphone]
-
-
-Speaker amplifier
-
-PAM8403 audio amplifier module https://www.youtube.com/watch?v=oB-k0tA1G2M
-
-
-https://www.amazon.nl/-/en/TDA2822M-Channel-Stereo-Amplifier-1-8V-12V/dp/B07STCS657/259-7659947-4303303?pd_rd_w=Tzz72&content-id=amzn1.sym.6daa5e17-8bfe-4c78-bcdc-d2cf42b4d704&pf_rd_p=6daa5e17-8bfe-4c78-bcdc-d2cf42b4d704&pf_rd_r=1BRV7ZD4MHXGDN2ECFH2&pd_rd_wg=tkW84&pd_rd_r=be98f06c-926b-41cf-92be-c61d186b0ddd&pd_rd_i=B07STCS657&psc=1
-
+source venv/bin/activate  # Linux/Mac
+venv\Scripts\activate     # Windows
 
 # chatting room and / or / vs / with  artific 
 application to send text messanges like: text, link 
