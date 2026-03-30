@@ -1,18 +1,23 @@
 import os
 from dotenv import load_dotenv
 import uvicorn
+from controller.graph_render import router as routerGraph
+from controller.node import router as routerNode
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from common.config.db_app import lifespan
 
-from representation_engin.main import generate_graph
 
 load_dotenv()
 
-app = FastAPI()
+app = FastAPI(lifespan=lifespan)
+app.include_router(routerGraph)
+app.include_router(routerNode)
 
 # Get the string from .env and split it by the comma into a list
-origins_str = os.getenv("ALLOWED_ORIGINS", "http://localhost:5173")
+origins_str = os.getenv("ALLOWED_ORIGINS", "http://localhost:50000")
 origins = origins_str.split(",")
+print(origins)
 
 app.add_middleware(
     CORSMiddleware,
@@ -22,9 +27,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.get("/api/graph")
-def get_graph():
-    return generate_graph()
+
 
 
 if __name__ == "__main__" :
