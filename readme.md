@@ -5,6 +5,12 @@
 ## frontend
 WEBKIT_DISABLE_COMPOSITING_MODE=1 bun start
 
+## backend
+0. pip poetry install
+1. poetry install
+2. poetry run uvicorn main:app --reload --port 8080
+
+
 ## to do
 1. How to make it self-contained
 
