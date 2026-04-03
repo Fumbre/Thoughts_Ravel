@@ -1,10 +1,7 @@
 <script setup>
 import { ref, onMounted, nextTick } from 'vue'
 import { Network } from 'vis-network/standalone'
-import { apiFetch } from '../tools/api';
-
-
-const API_BASE = import.meta.env.VITE_API_BASE_URL;
+import { apiBaseFetch } from '../../tools/api';
 
 const backendData = ref(null)
 const error = ref(null)
@@ -14,8 +11,8 @@ let network = null
 
 const fetchData = async () => {
   try {
-    const response = await apiFetch('/api/graph')
-    const response1 = await apiFetch('/api/node/7444177008625455104')
+    const response = await apiBaseFetch('/api/graph')
+    const response1 = await apiBaseFetch('/api/node/7444177008625455104') // just cheking here the get request
 
     if (!response.ok) throw new Error('Backend not responding')
     

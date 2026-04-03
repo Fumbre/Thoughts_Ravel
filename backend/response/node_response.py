@@ -13,3 +13,7 @@ class NodeResponse(BaseModel):
     model_config = {
         "from_attributes": True  # Pydantic v2 equivalent of orm_mode
     }
+
+
+class NodeListResponse(BaseModel):
+    nodeList: Optional[list[NodeResponse]]
