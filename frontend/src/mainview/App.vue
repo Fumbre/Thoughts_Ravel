@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// import Graph from "../components/Graph.vue"
+import Graph from "../components/Graph/Graph.vue"
 import Space from "../components/Space/Space.vue";
 </script>
 
@@ -8,8 +8,8 @@ import Space from "../components/Space/Space.vue";
     <h1 class="title">Thoughts Ravel</h1>
   </header>
   <main>
-  <!-- <Graph /> -->
-   <Space />
+  <Graph />
+   <!-- <Space /> -->
   </main>
   <footer>
     <!-- <div class="test">we have here menu</div> -->

@@ -11,16 +11,16 @@ let network = null
 
 const fetchData = async () => {
   try {
-    const response = await apiBaseFetch('/api/graph')
-    const response1 = await apiBaseFetch('/api/node/7444177008625455104') // just cheking here the get request
+    const response = await apiBaseFetch('/api/graph/11234')
+    // const response1 = await apiBaseFetch('/api/node/7444177008625455104') // just cheking here the get request
 
     if (!response.ok) throw new Error('Backend not responding')
     
     const data = await response.json()
     backendData.value = data
 
-    const data1 = await response1.json()
-    console.log(  data1)
+    // const data1 = await response1.json()
+    console.log(  data)
 
     await nextTick()
 

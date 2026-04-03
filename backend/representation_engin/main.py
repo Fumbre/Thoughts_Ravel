@@ -1,31 +1,30 @@
 import networkx as nx
 from pyvis.network import Network
+from response.node_relations_response import NodeRelationsListResponse
 
 
-# html
-def generate_graph():
-  G = nx.Graph()
-  G.add_edge("A", "B")
+# object
+def generate_graph(data: NodeRelationsListResponse, nodes_map: list, space_title: str):
+    nodes_dict = {str(n.id): n for n in nodes_map}
+    
+    G = nx.Graph()
+    for relation in data.nodeRelationsList:
+        G.add_edge(str(relation.parentId), str(relation.nodeId))
+    
+    net = Network(notebook=False, directed=False)
+    net.from_nx(G)
+    
+    for node in net.nodes:
+        if node['id'] == '0':
+            node['label'] = space_title
+        else:
+            n = nodes_dict.get(str(node['id']))
+            if n:
+                node['label'] = n.name
+                node['color'] = n.color
+    
+    return {"nodes": net.nodes, "edges": net.edges}
 
-  G.add_edge("B", "Ab")
-  G.add_edge("B", "Bb")
-  G.add_edge("B", "Cb")
-
-
-  G.add_edge("A", "C")
-  G.add_edge("C", "Aa") 
-  G.add_edge("C", "Ba")
-
-  G.add_edge("D", "Ab")
-  G.add_edge("D", "Bb")
-  G.add_edge("D", "Cb")
-
-
-  net = Network(notebook=False, directed=False)
-
-  net.from_nx(G)
-
-  return {"nodes": net.nodes, "edges": net.edges}
 
 # net = Network(notebook=False, directed=False)
 # net.from_nx(G)
