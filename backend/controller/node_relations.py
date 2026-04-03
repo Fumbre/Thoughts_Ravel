@@ -10,7 +10,7 @@ from service.node_relations_service import insert, get
 router = APIRouter(prefix='/api')
 
 @router.post('/node_relations')
-async def createNodeRelations(request: NodeRelationsRequest) -> CommonResponse:
+async def createNodeRelations(request: NodeRelationsListRequest) -> CommonResponse:
     return await insert(request)
 
 @router.get('/node_relations/{spaceId}')
