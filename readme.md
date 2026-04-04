@@ -49,3 +49,19 @@ Starts Python backend (e.g., bun.spawn("python", ["backend/main.py"]))
 Opens the WebView pointing to the local dist/index.html or Python URL
 
 When the app closes → you can terminate Python automatically.
+
+# TOGETHER IDEAS
+0. Use as a game separate ai conversations. Platmor AI will controll all request 
+
+0. Using Sunny idea ( API Platfrom ) - week can combine a lot off diferent api's that are in different servers platfroms that runs their code. We should use radio sygnal from our Pico device and in possibilitty to connect to that using 2.4 very close to your friend and in server 
+
+it would be even cool to put there your own programs and run them in view UI like a dino cheat, but code runs in the node.
+
+## Server in C/C++
+
+1. ### Connection
+A microphone produces a very small analog signal (millivolts) That's why we need mic with Amplifier
+A speaker needs power amplified to make sound
+The Pico’s GPIO pins can’t drive a speaker or read a mic level cleanly without an interface
+
+1. ### Sending data in The game (PayGames) with C/C++? for game?! ;)
