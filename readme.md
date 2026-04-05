@@ -11,7 +11,7 @@
 1. bun install 
 
 ### How to start app 
-1. bun start
+1. 1
 
 ### Broblem to see app Arch X11 B
 1. WEBKIT_DISABLE_COMPOSITING_MODE=1 bun start

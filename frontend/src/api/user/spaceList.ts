@@ -10,7 +10,6 @@ export const fetchSpacesList = async (): Promise<ApiResponse<any>> => {
     try {
         const res = await apiBaseFetch('/api/space')
         if (!res.ok) throw new Error('Backend not responding')
-
         const json = await res.json()
         return json
     } catch (err: unknown) {

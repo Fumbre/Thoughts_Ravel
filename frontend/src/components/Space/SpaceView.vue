@@ -16,7 +16,7 @@ const fetchSpaces = async () => {
     return
   }
 
-  spaces.value = res.data
+  spaces.value = res.data.spaceList
 }
 
 onMounted(fetchSpaces)
