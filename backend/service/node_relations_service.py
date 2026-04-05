@@ -7,6 +7,17 @@ from common.response.default import CommonResponse
 
 from response.node_relations_response import NodeRelationsResponse, NodeRelationsListResponse
 
+# inser data
+# into Thouts ravel nodes relations tabel
+# help to see the nodes relations ships of this user
+##
+## future goal
+## make nodes public and subscribe
+## you can also put it where you want in your system
+
+## create nodes holding
+## nodes subscribe 
+
 @Transactional
 async def insert(request: NodeRelationsListRequest, db: AsyncSession) -> CommonResponse:
     emptyList = []

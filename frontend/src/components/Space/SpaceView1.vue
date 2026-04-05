@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { apiBaseFetch } from '../../tools/api'
+import { fetchSpacesList } from '../../api/user/spaceList'
 
 const spaces = ref([])
 const error = ref(null)
@@ -8,14 +9,14 @@ const error = ref(null)
 const emit = defineEmits(['select', 'create'])
 
 const fetchSpaces = async () => {
-  try {
-    const res = await apiBaseFetch('/api/space')
-    if (!res.ok) throw new Error('Backend not responding')
-    const json = await res.json()
-    spaces.value = json.data.spaceList
-  } catch (err) {
-    error.value = err.message
+  const res = await fetchSpacesList()
+
+  if (res.error) {
+    error.value = res.error
+    return
   }
+
+  spaces.value = res.data
 }
 
 onMounted(fetchSpaces)
