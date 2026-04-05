@@ -4,6 +4,9 @@ import { apiBaseFetch } from '../../tools/api'
 
 const emit = defineEmits(['created', 'close'])
 
+// Things to change after token
+const userId = 1
+
 const title = ref('')
 const loading = ref(false)
 const error = ref(null)
@@ -18,7 +21,7 @@ const handleSubmit = async () => {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        spaceList: [{ userId: 1, title: title.value.trim() }]
+        spaceList: [{ userId: userId, title: title.value.trim() }]
       })
     })
     if (!res.ok) throw new Error('Failed to create space')

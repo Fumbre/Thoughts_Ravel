@@ -1,20 +1,38 @@
 <script setup>
-import { ref, onMounted, nextTick } from 'vue'
+import { ref, onMounted, nextTick, watch } from 'vue'
 import { Network } from 'vis-network/standalone'
 import { apiBaseFetch } from '../../tools/api';
+// import { node} handleMouseEvent
 
 const backendData = ref(null)
 const error = ref(null)
 
+const generateGraph = ref(false)
 const graphElement = ref(null)
 let network = null
 
-const fetchData = async () => {
+const props = defineProps({
+  nodeId: String 
+})
+
+const emit = defineEmits(['nodeClick'])
+
+watch(
+  () => props.nodeId,
+  async (newId) => {
+    if (!newId) return
+    await fetchData(newId)
+  },
+  { immediate: true } // runs on first load too
+)
+
+async function fetchData (nodeId) {
   try {
-    const response = await apiBaseFetch('/api/graph/11234')
-    // const response1 = await apiBaseFetch('/api/node/7444177008625455104') // just cheking here the get request
+    // fetch graphic generation object
+    const response = await apiBaseFetch(`/api/graph/${nodeId}`)
 
     if (!response.ok) throw new Error('Backend not responding')
+    // const response1 = await apiBaseFetch('/api/node/7444177008625455104') // just cheking here the get request
     
     const data = await response.json()
     backendData.value = data
@@ -29,7 +47,10 @@ const fetchData = async () => {
         return
     }
 
+
+    // create it using correct x and y from database
     network = new Network(graphElement.value, data, {
+        
 
         // Add your vis-network options here
         physics: { enabled: false },
@@ -43,11 +64,23 @@ const fetchData = async () => {
         }
     })
 
+    // const positions = network.getPositions()
+
+    // set nodes position to correct database position
+    // const getAllNodePositions = () => {
+    //     if (!network) return {}
+
+    //     const positions = network.getPositions()
+    //     console.log("All positions:", positions)
+
+    //     return positions
+    // }
+
     network.on('click', (params)=>{
         if (params.nodes.length > 0) {
             const nodeId = params.nodes[0]
+            emit('nodeClick', nodeId)
 
-            
             handleNodeClick(nodeId)
         }
     })
@@ -62,18 +95,21 @@ const fetchData = async () => {
 
     });
 
-    console.log("Network initialized:", network)
+    // console.log("Network initialized:", network)
+
+    generateGraph.value = true;
   } catch (err) {
     error.value = err.message
   }
 }
 
 function handleNodeClick(nodeId) {
-    console.log("node clicked: ", nodeId);
+    console.log("n1ode clicked: ", nodeId);
 }
 
+
+
 onMounted(() => {
-  fetchData()
 
   const resizeObserver = new ResizeObserver(() => {
     if (network) {

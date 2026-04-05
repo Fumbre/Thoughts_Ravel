@@ -9,12 +9,15 @@ const error = ref(null)
 const emit = defineEmits(['select', 'create'])
 
 const fetchSpaces = async () => {
+  // function to fetch api space list for user
   const res = await fetchSpacesList()
 
+  // create a faile loader class to hangle UI for errors
   if (res.error) {
     error.value = res.error
     return
   }
+
 
   spaces.value = res.data.spaceList
 }
