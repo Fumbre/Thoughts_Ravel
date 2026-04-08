@@ -11,12 +11,14 @@ def generate_graph(data: NodeRelationsListResponse, nodes_map: list, space_title
     for relation in data.nodeRelationsList:
         G.add_edge(str(relation.parentId), str(relation.nodeId))
     
+    G.remove_node('0')
+    
     net = Network(notebook=False, directed=False)
     net.from_nx(G)
     
     for node in net.nodes:
         if node['id'] == '0':
-            node['label'] = space_title
+            continue
         else:
             n = nodes_dict.get(str(node['id']))
             if n:

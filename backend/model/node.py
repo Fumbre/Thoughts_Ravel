@@ -12,6 +12,7 @@ class Node(Base):
     positionY:Mapped[float] = mapped_column("positionY", FLOAT, nullable=False)
     color:Mapped[str] = mapped_column("color", String, nullable=False)
     shape:Mapped[str] = mapped_column("shape", String, nullable=False)
+    creater_id:Mapped[int] = mapped_column("creater_id", BigInteger, nullable=False)
 
 
 # class InsideNodes(Base):

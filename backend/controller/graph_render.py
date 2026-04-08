@@ -9,12 +9,13 @@ from service.space_service import get as get_space
 
 router = APIRouter(prefix='/api')
 
+CURRENT_USER_ID = "1"  # mock, replace with JWT later
+
 @router.get("/graph/{spaceId}")
 async def get_graph(spaceId: str, db: AsyncSession = Depends(DB.get_session)):
     relations = await get_node_relations(spaceId=spaceId, db=db)
-    space = await get_space(id=spaceId, userId='1', db=db)
+    space = await get_space(id=spaceId, userId=CURRENT_USER_ID, db=db)
 
-    
     nodesData = []
     # super bad approach, uses a lot of requests to db
     for relation in relations.data.nodeRelationsList:

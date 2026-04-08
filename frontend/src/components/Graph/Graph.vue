@@ -12,13 +12,13 @@ const graphElement = ref(null)
 let network = null
 
 const props = defineProps({
-  nodeId: String 
+  spaceId: String 
 })
 
 const emit = defineEmits(['nodeClick'])
 
 watch(
-  () => props.nodeId,
+  () => props.spaceId,
   async (newId) => {
     if (!newId) return
     await fetchData(newId)
@@ -26,10 +26,10 @@ watch(
   { immediate: true } // runs on first load too
 )
 
-async function fetchData (nodeId) {
+async function fetchData (spaceId) {
   try {
     // fetch graphic generation object
-    const response = await apiBaseFetch(`/api/graph/${nodeId}`)
+    const response = await apiBaseFetch(`/api/graph/${spaceId}`)
 
     if (!response.ok) throw new Error('Backend not responding')
     // const response1 = await apiBaseFetch('/api/node/7444177008625455104') // just cheking here the get request

@@ -1,10 +1,5 @@
 import { apiBaseFetch } from "../../tools/api"
-
-
-type ApiResponse<T> = {
-    data?: T
-    error?: string
-}
+import { ApiResponse } from '../response'
 
 export const fetchSpacesList = async (): Promise<ApiResponse<any>> => {
     try {

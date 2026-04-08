@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { apiBaseFetch } from '../../tools/api'
-import { fetchSpacesList } from '../../api/user/spaceList'
+import { fetchSpacesList } from '../../api/space/spaceList'
 
 const spaces = ref([])
 const error = ref(null)

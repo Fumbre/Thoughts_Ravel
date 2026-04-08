@@ -2,18 +2,54 @@ from sqlalchemy import select
 from request.space_request import SpaceRequest, SpaceListRequest
 from decorators.decor import Transactional
 from model.space import Space
+from model.node import Node, NodesRelations
 from common.db.session import AsyncSession
 from common.response.default import CommonResponse
+from common.id.snowflake_id_util import getId
+
+from service.node_service import insert as node_insert
 
 from response.space_response import SpaceResponse, SpaceListResponse
 
+CURRENT_USER = 1
+
 @Transactional
 async def insert(request: SpaceListRequest, db: AsyncSession) -> CommonResponse:
-    emptyList = []
-    for space in request.spaceList :
-        emptyList.append(Space(**space.model_dump()))
+    emptySpaceList = []
+    emptyNodeList = []
+    emptyNodeRelationList = []
 
-    db.add_all(emptyList)
+    for space in request.spaceList :
+        spaceId = getId()
+        nodeId = getId()
+
+        orm_space = Space(**space.model_dump())
+        orm_space.id = spaceId
+
+        # orm_node = Node(**node.model_dump())
+        node = Node(
+            id=nodeId,
+            name=orm_space.title,
+            positionX= 0,
+            positionY= 0,
+            color='blue',
+            shape='circle',
+            creater_id=CURRENT_USER
+        )
+
+        nodesRelations = NodesRelations(
+            parentId = 0,
+            nodeId = nodeId,
+            spaceId = spaceId
+        )
+
+        emptyNodeList.append(node)
+        emptyNodeRelationList.append(nodesRelations)
+        emptySpaceList.append(orm_space)
+
+    db.add_all(emptySpaceList)
+    db.add_all(emptyNodeList)
+    db.add_all(emptyNodeRelationList)
 
     return CommonResponse.success()
 
@@ -30,7 +66,10 @@ async def get_all(userId: str, db: AsyncSession) -> CommonResponse[SpaceListResp
     data = await db.scalars(select(Space).where(Space.userId == int(userId)))
     results = data.all()
     results = [SpaceResponse.model_validate(row) for row in results]
+    
     for result in results:
         result.id = str(result.id)
 
     return CommonResponse.success(data=SpaceListResponse(spaceList=results))
+
+
