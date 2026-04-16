@@ -11,6 +11,7 @@ router = APIRouter(prefix='/api')
 
 @router.post('/node')
 async def createNode(request: NodeListRequest) -> CommonResponse:
+    print(request)
     return await insert(request)
 
 @router.get('/node/{id}')

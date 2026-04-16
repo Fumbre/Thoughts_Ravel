@@ -35,9 +35,27 @@ const onGraphGenerete = async (id) => {
 
 const onGraphNodeClick = async (nodeId) => {
   console.log('lets see mouse event')
-  const test = await apiBaseFetch(`/api/node/${nodeId}`)
-  const res = await test.json()
-  console.log(res.data);
+  
+  // const test = await apiBaseFetch(`/api/node/${nodeId}`)
+  
+  // const test = await apiBaseFetch(`/api/node`, {
+  //   method: 'POST',
+  //   headers: {
+  //     "Content-Type": "application/json"
+  //   },
+  //   body: JSON.stringify({
+  //     nodeList: [{
+  //       name: "Node",
+  //       desc: "opt",
+  //       positionX: 10,
+  //       positionY: 10,
+  //       color: 'blue',
+  //       shape: 'circle'
+  //   }]})
+  // })
+
+  // const res = await test.json()
+  // console.log(res.data);
 
   // TODO
   // CREATE on this positions a block
