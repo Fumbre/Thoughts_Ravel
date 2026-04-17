@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { apiBaseFetch } from '../../tools/api'
 import { fetchSpacesList } from '../../api/space/spaceList'
 
@@ -22,6 +22,19 @@ const fetchSpaces = async () => {
   spaces.value = res.data.spaceList
 }
 
+const sortOrder = ref('asc')  // or 'desc'
+
+
+const sortedSpaces = computed(() => {
+  console.log("sorting spaces with order: ")
+  if (sortOrder.value === 'asc') return spaces.value
+  return [...spaces.value].sort((a, b) => {
+    if (sortOrder.value === 'asc') return a.id.localeCompare(b.id)
+    return b.id.localeCompare(a.id)
+  })
+})
+
+
 onMounted(fetchSpaces)
 defineExpose({ fetchSpaces })
 </script>
@@ -36,11 +49,21 @@ defineExpose({ fetchSpaces })
       <button class="btn-create" @click="emit('create')">
         + New space
       </button>
+      <nav class="spaces__sort sort">
+        <ul class="sort__list">
+          <li class="sort__item">
+            <a @click="sortOrder = 'asc'" :class="{ 'sort__item--active': sortOrder === 'asc' }">asc</a>
+          </li>
+          <li class="sort__item">
+            <a @click="sortOrder = 'desc'" :class="{ 'sort__item--active': sortOrder === 'desc' }">desc</a>
+          </li>
+        </ul>
+      </nav>
     </div>
 
     <ul v-if="spaces.length" class="spaces__list">
-      <li v-for="space in spaces" :key="space.id"
-          class="space__card" @click="emit('select', space.id)">
+      <li v-for="space in sortedSpaces" :key="space.id" :data-sort="space.name" class="space__card"
+        @click="emit('select', space.id)">
         <div class="space__wrapper">
           <div class="space__dot"></div>
           <div>
@@ -124,7 +147,7 @@ defineExpose({ fetchSpaces })
   background: #fafafa;
 }
 
-.space__card + .space__card {
+.space__card+.space__card {
   border-top: 1px solid #eee;
 }
 
