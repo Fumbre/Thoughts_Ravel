@@ -9,6 +9,7 @@ class NodeResponse(BaseModel):
     positionY: float
     color: str
     shape: str
+    creater_id: int
 
     model_config = {
         "from_attributes": True  # Pydantic v2 equivalent of orm_mode

@@ -10,12 +10,14 @@ from response.node_response import NodeResponse, NodeListResponse
 @Transactional
 async def insert(request: NodeListRequest, db: AsyncSession) -> CommonResponse[NodeListResponse]:
     emptyList = []
+    print(request.nodeList)
     for node in request.nodeList :
         emptyList.append(Node(**node.model_dump()))
 
     db.add_all(emptyList)
     
-    return CommonResponse.success(data=emptyList)
+    # return CommonResponse.success(data=emptyList)
+    return CommonResponse.success()
 
 
 

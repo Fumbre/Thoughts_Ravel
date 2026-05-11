@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from 'vue'
-import { apiBaseFetch } from '../../tools/api'
+import { apiBaseFetch } from '@/tools/api'
 
 const emit = defineEmits(['created', 'close'])
 

@@ -14,7 +14,7 @@ import Space from "../components/Space/Space.vue";
 // }
 </script>
 
-<template>
+<!-- <template>
   <header>
     <h1 class="title">Thoughts Ravel</h1>
   </header>
@@ -23,9 +23,16 @@ import Space from "../components/Space/Space.vue";
     <!-- <Graph > -->
       <!-- <Node/> -->
     <!-- </Graph> -->
-   </Space>
+   <!-- </Space>
   </main>
   <footer>
     <!-- <div class="test">we have here menu</div> -->
-  </footer>
+  <!-- </footer> -->
+<!-- </template> --> 
+
+
+<template>
+  <header><h1 class="title">Thoughts Ravel</h1></header>
+  <main><RouterView /></main>
+  <footer></footer>
 </template>

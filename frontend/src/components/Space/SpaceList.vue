@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
-import { apiBaseFetch } from '../../tools/api'
-import { fetchSpacesList } from '../../api/space/spaceList'
+import { apiBaseFetch } from '@/tools/api'
+import { fetchSpaceList } from '@/api/space/spaceList'
 
 const spaces = ref([])
 const error = ref(null)
@@ -10,7 +10,7 @@ const emit = defineEmits(['select', 'create'])
 
 const fetchSpaces = async () => {
   // function to fetch api space list for user
-  const res = await fetchSpacesList()
+  const res = await fetchSpaceList()
 
   // create a faile loader class to hangle UI for errors
   if (res.error) {
@@ -62,8 +62,8 @@ defineExpose({ fetchSpaces })
     </div>
 
     <ul v-if="spaces.length" class="spaces__list">
-      <li v-for="space in sortedSpaces" :key="space.id" :data-sort="space.name" class="space__card"
-        @click="emit('select', space.id)">
+      <li v-for="space in sortedSpaces" :key="space.id" :data-sort="space.name" class="space__card">
+        <RouterLink :to="`/space/${space.id}`" class="space__link">
         <div class="space__wrapper">
           <div class="space__dot"></div>
           <div>
@@ -72,6 +72,7 @@ defineExpose({ fetchSpaces })
           </div>
         </div>
         <span class="space__arrow">›</span>
+        </RouterLink>
       </li>
     </ul>
 
@@ -102,6 +103,13 @@ defineExpose({ fetchSpaces })
   font-size: 14px;
   color: #888;
   margin: 0;
+}
+
+.space__link {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  text-decoration: none;
 }
 
 .btn-create {

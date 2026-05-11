@@ -8,6 +8,7 @@ class NodeRequest(BaseModel):
     positionY: float
     color: str
     shape: str
+    creater_id: int
 
 
 class NodeListRequest(BaseModel):
