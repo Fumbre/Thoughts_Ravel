@@ -5,6 +5,8 @@ class NodeRelationsRequest(BaseModel):
     parentId: int
     nodeId: int
     spaceId: int
+    userId: int
+    public_status: str
 
 
 class NodeRelationsListRequest(BaseModel):

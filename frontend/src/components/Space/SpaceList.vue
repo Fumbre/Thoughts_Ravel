@@ -1,137 +1,59 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
-import { apiBaseFetch } from '@/tools/api'
 import { fetchSpaceList } from '@/api/space/spaceList'
 
+
+const props = defineProps({
+  sortOrder: { type: String, default: 'asc' }
+})
+
+// list of spaces
 const spaces = ref([])
 const error = ref(null)
 
-const emit = defineEmits(['select', 'create'])
 
-const fetchSpaces = async () => {
-  // function to fetch api space list for user
+const loadSpaces = async () => {
+  // fetch list of spaces for current user
   const res = await fetchSpaceList()
 
   // create a faile loader class to hangle UI for errors
-  if (res.error) {
-    error.value = res.error
-    return
-  }
-
+  if (res.error) { error.value = res.error; return }
 
   spaces.value = res.data.spaceList
 }
 
-const sortOrder = ref('asc')  // or 'desc'
-
-
+// sort spaces based on its id
 const sortedSpaces = computed(() => {
   console.log("sorting spaces with order: ")
-  if (sortOrder.value === 'asc') return spaces.value
-  return [...spaces.value].sort((a, b) => {
-    if (sortOrder.value === 'asc') return a.id.localeCompare(b.id)
-    return b.id.localeCompare(a.id)
-  })
+  if (props.sortOrder === 'asc') return spaces.value
+  return [...spaces.value].sort((a, b) => b.id.localeCompare(a.id))
 })
 
-
-onMounted(fetchSpaces)
-defineExpose({ fetchSpaces })
+onMounted(loadSpaces)
+defineExpose({ loadSpaces })
 </script>
 
 <template>
-  <div class="spaces__container container">
-    <div class="spaces__top">
-      <div class="spaces__header">
-        <h2 class="spaces__title">Your spaces</h2>
-        <p class="spaces__sub">Pick a space to explore its graph</p>
-      </div>
-      <button class="btn-create" @click="emit('create')">
-        + New space
-      </button>
-      <nav class="spaces__sort sort">
-        <ul class="sort__list">
-          <li class="sort__item">
-            <a @click="sortOrder = 'asc'" :class="{ 'sort__item--active': sortOrder === 'asc' }">asc</a>
-          </li>
-          <li class="sort__item">
-            <a @click="sortOrder = 'desc'" :class="{ 'sort__item--active': sortOrder === 'desc' }">desc</a>
-          </li>
-        </ul>
-      </nav>
-    </div>
-
-    <ul v-if="spaces.length" class="spaces__list">
-      <li v-for="space in sortedSpaces" :key="space.id" :data-sort="space.name" class="space__card">
-        <RouterLink :to="`/space/${space.id}`" class="space__link">
+  <ul v-if="spaces.length" class="spaces__list">
+    <li v-for="space in sortedSpaces" :key="space.id" :data-sort="space.name" class="space__card">
+      <RouterLink :to="`/space/${space.id}`" class="space__link">
         <div class="space__wrapper">
           <div class="space__dot"></div>
           <div>
             <p class="space__title">{{ space.title }}</p>
-            <p class="space__meta">{{ space.id }}</p>
+            <!-- <p class="space__meta">{{ space.id }}</p> -->
           </div>
         </div>
         <span class="space__arrow">›</span>
-        </RouterLink>
-      </li>
-    </ul>
+      </RouterLink>
+    </li>
+  </ul>
 
-    <div v-else class="empty">No spaces yet. Create your first one.</div>
-    <p v-if="error" class="err">{{ error }}</p>
-  </div>
+  <div v-else class="empty">No spaces yet. Create your first one.</div>
+  <p v-if="error" class="err">{{ error }}</p>
 </template>
 
 <style scoped>
-.spaces__container {
-  padding: 2rem 1.5rem;
-}
-
-.spaces__top {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  margin-bottom: 1.5rem;
-}
-
-.spaces__title {
-  font-size: 22px;
-  font-weight: 500;
-  margin: 0 0 4px;
-}
-
-.spaces__sub {
-  font-size: 14px;
-  color: #888;
-  margin: 0;
-}
-
-.space__link {
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  text-decoration: none;
-}
-
-.btn-create {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 13px;
-  font-weight: 500;
-  padding: 8px 16px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  background: white;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: background 0.15s, border-color 0.15s;
-}
-
-.btn-create:hover {
-  background: #f5f5f5;
-  border-color: #bbb;
-}
-
 .spaces__list {
   list-style: none;
   margin: 0;
@@ -142,6 +64,7 @@ defineExpose({ fetchSpaces })
 }
 
 .space__card {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -179,6 +102,23 @@ defineExpose({ fetchSpaces })
   margin: 0 0 2px;
 }
 
+.space__link {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  text-decoration: none;
+  color: #f84fed;
+}
+
+.space__link::before {
+  position: absolute;
+  content: '';
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
 .space__meta {
   font-size: 12px;
   color: #aaa;
@@ -188,6 +128,7 @@ defineExpose({ fetchSpaces })
 .space__arrow {
   font-size: 18px;
   color: #ccc;
+  justify-self: end;
 }
 
 .empty {

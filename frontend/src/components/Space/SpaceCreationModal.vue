@@ -45,14 +45,8 @@ const handleSubmit = async () => {
 
       <div class="modal__body">
         <label class="field__label">Space name</label>
-        <input
-          v-model="title"
-          class="field__input"
-          type="text"
-          placeholder="e.g. research, ideas, movies..."
-          @keydown.enter="handleSubmit"
-          autofocus
-        />
+        <input v-model="title" class="field__input" type="text" placeholder="e.g. research, ideas, movies..."
+          @keydown.enter="handleSubmit" autofocus />
         <p v-if="error" class="err">{{ error }}</p>
       </div>
 

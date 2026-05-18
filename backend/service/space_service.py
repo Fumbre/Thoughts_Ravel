@@ -40,7 +40,9 @@ async def insert(request: SpaceListRequest, db: AsyncSession) -> CommonResponse:
         nodesRelations = NodesRelations(
             parentId = 0,
             nodeId = nodeId,
-            spaceId = spaceId
+            spaceId = spaceId,
+            userId = CURRENT_USER,
+            public_status = 'r'
         )
 
         emptyNodeList.append(node)

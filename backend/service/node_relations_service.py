@@ -39,6 +39,7 @@ async def get(spaceId: str, db: AsyncSession) -> CommonResponse[NodeRelationsLis
         result.parentId = str(result.parentId)
         result.nodeId = str(result.nodeId)
         result.spaceId = str(result.spaceId)
+        result.userId = str(result.userId)
 
     return CommonResponse.success(data=NodeRelationsListResponse(nodeRelationsList=results))
 

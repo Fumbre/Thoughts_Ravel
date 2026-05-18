@@ -26,8 +26,10 @@ class NodesRelations(Base):
     parentId:Mapped[int] = mapped_column("parentId", BigInteger, nullable=False)
     nodeId:Mapped[int] = mapped_column("nodeId", BigInteger, nullable=False)
     spaceId:Mapped[int] = mapped_column("spaceId", BigInteger, nullable=False)
+    userId:Mapped[int] = mapped_column("userId", BigInteger, nullable=False)
+    public_status:Mapped[str] = mapped_column("public_status", String(1), nullable=False)
 
     __table_args__ = (
-        PrimaryKeyConstraint('parentId', 'nodeId', 'spaceId'),
+        PrimaryKeyConstraint('parentId', 'nodeId', 'spaceId', 'userId'),
     )
     
