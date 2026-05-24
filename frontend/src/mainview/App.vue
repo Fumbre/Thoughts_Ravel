@@ -9,8 +9,8 @@ import Space from "../components/Space/Space.vue";
 
 // if clicked
 // const onSpace = () => {
-  // graphGenereted.value = true
-  // graphRef.value?.fetchData() 
+// graphGenereted.value = true
+// graphRef.value?.fetchData()
 // }
 </script>
 
@@ -21,18 +21,22 @@ import Space from "../components/Space/Space.vue";
   <main>
    <Space >
     <!-- <Graph > -->
-      <!-- <Node/> -->
-    <!-- </Graph> -->
-   <!-- </Space>
+<!-- <Node/> -->
+<!-- </Graph> -->
+<!-- </Space>
   </main>
   <footer>
     <!-- <div class="test">we have here menu</div> -->
-  <!-- </footer> -->
-<!-- </template> --> 
+<!-- </footer> -->
+<!-- </template> -->
 
 
 <template>
-  <header><h1 class="title">Thoughts Ravel</h1></header>
-  <main><RouterView /></main>
+  <header>
+    <h1 class="title">Thoughts Ravel</h1>
+  </header>
+  <main class="main">
+    <RouterView />
+  </main>
   <footer></footer>
 </template>

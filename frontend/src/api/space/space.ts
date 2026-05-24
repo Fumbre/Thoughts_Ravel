@@ -1,6 +1,7 @@
 import { apiBaseFetch } from "../../tools/api"
 import { ApiResponse } from '../response'
 
+// get space by id
 export const fetchSpaceId = async (spaceId: string): Promise<ApiResponse<any>> => {
     try {
         const res = await apiBaseFetch(`/api/space/${spaceId}`)
@@ -13,3 +14,4 @@ export const fetchSpaceId = async (spaceId: string): Promise<ApiResponse<any>> =
         }
     }
 }
+

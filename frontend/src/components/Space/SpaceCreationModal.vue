@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from 'vue'
-import { apiBaseFetch } from '@/tools/api'
+import { postSpaceList } from '@/api/space/spaceList'
 
 const emit = defineEmits(['created', 'close'])
 
@@ -12,19 +12,17 @@ const loading = ref(false)
 const error = ref(null)
 
 const handleSubmit = async () => {
-  if (!title.value.trim()) return
+  const titleClean = title.value.trim() // clean spaces
+
+  if (!titleClean) return
   loading.value = true
   error.value = null
 
   try {
-    const res = await apiBaseFetch('/api/space', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        spaceList: [{ userId: userId, title: title.value.trim() }]
-      })
-    })
-    if (!res.ok) throw new Error('Failed to create space')
+    const res = await postSpaceList([{ userId: userId, title: titleClean }])
+
+    if (res.error) throw new Error('Failed to create space')
+
     emit('created')
     title.value = ''
   } catch (err) {
