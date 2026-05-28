@@ -2,6 +2,7 @@
 import { ref, onMounted, watch, nextTick } from 'vue'
 import { Network } from 'vis-network/standalone'
 import { apiBaseFetch } from '@/tools/api'
+import { fetchGraph } from '@/api/graph/graph'
 
 const props = defineProps({
     spaceId: { type: String, required: true }
@@ -23,6 +24,7 @@ const initNetwork = (data) => {
     })
 
     network.on('click', ({ nodes }) => {
+        console.log(nodes)
         if (nodes.length > 0) emit('nodeClick', nodes[0])
     })
 
@@ -36,11 +38,10 @@ const initNetwork = (data) => {
 
 const loadGraph = async () => {
     try {
-        const res = await apiBaseFetch(`/api/graph/${props.spaceId}`)
-        if (!res.ok) throw new Error('Failed to load graph')
-        const data = await res.json()
+        const res = await fetchGraph(props.spaceId)
+        if (res.error) throw new Error('Failed to load graph')
         await nextTick()
-        if (graphElement.value) initNetwork(data)
+        if (graphElement.value) initNetwork(res.data)
     } catch (err) {
         error.value = err.message
     }

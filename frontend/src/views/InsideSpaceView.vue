@@ -1,21 +1,28 @@
 <script setup>
+import { useRouter } from 'vue-router'
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 import GraphCanvas from '@/components/Graph/GraphCanvas.vue'
 
 const route = useRoute()
+const router = useRouter()
 const spaceId = route.params.id
 
 const editMode = ref(false)
+const selectedNodeId = ref(null)
+const selectedNodeName = ref(null)
 
 const onNodeClick = (nodeId) => {
-    console.log('node clicked:', nodeId)
-    // open NodePanel later
     if (editMode.value) {
-        console.log('open node panel, block node on click')
+        // select node for editing, no navigation
+        selectedNodeId.value = nodeId
+        // you'll fetch node name here later
+        selectedNodeName.value = nodeId  // temp, replace with actual name
+    } else {
+        // navigate to node page
+        router.push(`/node/${nodeId}`)
     }
 }
-
 const onNodeMoved = ({ id, x, y }) => {
     console.log('node moved:', id, x, y)
     // save position to DB later
@@ -43,7 +50,7 @@ const onNodeMoved = ({ id, x, y }) => {
             <h3>Actions on specific node</h3>
             <ul class="panel-edit-node__list">
                 <li class="panel-edit-node__item">
-                    <span>selected node: {name of the node}</span>
+                    <span>selected node: {{ selectedNodeName ?? 'Node is not selected' }}</span>
                 </li>
                 <li class="panel-edit-node__item">
                     <button class="btn-green-light">add node</button>

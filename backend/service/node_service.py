@@ -20,8 +20,6 @@ async def insert(request: NodeListRequest, db: AsyncSession) -> CommonResponse[N
     return CommonResponse.success()
 
 
-
-
 async def get(id: str, db: AsyncSession) -> CommonResponse[NodeResponse]:
     data = await db.scalar(select(Node).where(Node.id == int(id)))
 
@@ -29,4 +27,5 @@ async def get(id: str, db: AsyncSession) -> CommonResponse[NodeResponse]:
     result.id = str(result.id)
 
     return CommonResponse.success(data=result)
+
 

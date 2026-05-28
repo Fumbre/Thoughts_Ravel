@@ -4,21 +4,21 @@ from response.node_relations_response import NodeRelationsListResponse
 
 
 # object
-def generate_graph(data: NodeRelationsListResponse, nodes_map: list, space_title: str):
+def generate_graph(data: NodeRelationsListResponse, nodes_map: list, space_title: str = "root"):
     nodes_dict = {str(n.id): n for n in nodes_map}
     
     G = nx.Graph()
     for relation in data.nodeRelationsList:
         G.add_edge(str(relation.parentId), str(relation.nodeId))
     
-    G.remove_node('0')
-    
+    G.remove_node('0')  
+
     net = Network(notebook=False, directed=False)
     net.from_nx(G)
     
     for node in net.nodes:
         if node['id'] == '0':
-            continue
+            node['label'] = space_title
         else:
             n = nodes_dict.get(str(node['id']))
             if n:
@@ -26,16 +26,4 @@ def generate_graph(data: NodeRelationsListResponse, nodes_map: list, space_title
                 node['color'] = n.color
     
     return {"nodes": net.nodes, "edges": net.edges}
-
-
-# net = Network(notebook=False, directed=False)
-# net.from_nx(G)
-
-# try:
-#   # nodes UI as index.html for node
-#   net.save_graph("../index.html")
-#   print("File created: index.html")
-# except Exception as e:
-#   print(f"Error: {e}")
-
 

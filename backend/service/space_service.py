@@ -75,3 +75,11 @@ async def get_all(userId: str, db: AsyncSession) -> CommonResponse[SpaceListResp
     return CommonResponse.success(data=SpaceListResponse(spaceList=results))
 
 
+# in theory it should be in node service
+async def get_nodes_by_space(spaceId: str, db: AsyncSession):
+    result = await db.scalars(
+        select(Node)
+        .join(NodesRelations, Node.id == NodesRelations.nodeId)
+        .where(NodesRelations.spaceId == int(spaceId))
+    )
+    return result.all()
