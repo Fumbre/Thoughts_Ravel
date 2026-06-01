@@ -3,9 +3,9 @@ import { useRouter } from 'vue-router'
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 import GraphCanvas from '@/components/Graph/GraphCanvas.vue'
+import { postNodeToNode } from '../api/node/node'
 
 const route = useRoute()
-const router = useRouter()
 const spaceId = route.params.id
 
 const editMode = ref(false)
@@ -20,13 +20,36 @@ const onNodeClick = (nodeId) => {
         selectedNodeName.value = nodeId  // temp, replace with actual name
     } else {
         // navigate to node page
-        router.push(`/node/${nodeId}`)
+        route.push(`/node/${nodeId}`)
     }
 }
 const onNodeMoved = ({ id, x, y }) => {
     console.log('node moved:', id, x, y)
     // save position to DB later
 }
+
+const addNode = () => {
+    const testChild = {
+        name: 'my nanme',
+        desc: 'string | null',
+        positionX: 23,
+        positionY: 23,
+        color: "blue",
+        shape: "circle",
+        creater_id: 1,
+    }
+
+    const testParent = {
+        nodeId: "7463519295578836993",
+        spaceId: "7463520655892287488",
+        userId: "1",
+    }
+
+
+    const re = postNodeToNode(testChild, testParent)
+    console.log("[insdie space view]", re)
+}
+
 </script>
 
 <template>
@@ -53,7 +76,7 @@ const onNodeMoved = ({ id, x, y }) => {
                     <span>selected node: {{ selectedNodeName ?? 'Node is not selected' }}</span>
                 </li>
                 <li class="panel-edit-node__item">
-                    <button class="btn-green-light">add node</button>
+                    <button class="btn-green-light" @click="addNode">add node</button>
                 </li>
                 <li class="panel-edit-node__item">
                     <button class="btn-orange">rename current node</button>

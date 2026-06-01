@@ -67,3 +67,38 @@ body {
 .btn-switch--active::after {
 	transform: translateX(20px);
 }
+
+
+.btn {
+	font-size: 14px;
+	font-weight: 500;
+	padding: 10px 16px;
+	border-radius: 8px;
+	border: none;
+	cursor: pointer;
+	transition: background 0.15s, opacity 0.15s;
+}
+
+.btn-primary {
+	background: #4f7ef8;
+	color: white;
+}
+
+.btn-primary:hover {
+	background: #3a6de0;
+}
+
+.btn-primary:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+.btn-full {
+	width: 100%;
+}
+
+.auth__error {
+	font-size: 13px;
+	color: #e24b4a;
+	margin: 0 0 1rem;
+}

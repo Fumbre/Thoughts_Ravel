@@ -1,5 +1,5 @@
 from sqlalchemy import select
-from request.node_request import NodeRequest, NodeListRequest
+from request.node_request import NodeRequest, NodeListRequest, NodeConnectionRequest
 from decorators.decor import Transactional
 from model.node import Node
 from common.db.session import AsyncSession
@@ -28,4 +28,5 @@ async def get(id: str, db: AsyncSession) -> CommonResponse[NodeResponse]:
 
     return CommonResponse.success(data=result)
 
-
+async def insert_connection(request: NodeConnectionRequest):
+    return ''

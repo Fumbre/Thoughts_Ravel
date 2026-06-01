@@ -8,6 +8,5 @@ class NodeRelationsRequest(BaseModel):
     userId: int
     public_status: str
 
-
 class NodeRelationsListRequest(BaseModel):
     nodeRelationsList: Optional[list[NodeRelationsRequest]]

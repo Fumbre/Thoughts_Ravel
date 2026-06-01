@@ -5,6 +5,7 @@ from controller.graph_render import router as routerGraph
 from controller.node import router as routerNode
 from controller.space import router as routerSpace
 from controller.node_relations import router as routerNodeRelations
+from controller.user import router as routerUser
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from common.config.db_app import lifespan
@@ -17,6 +18,7 @@ app.include_router(routerGraph)
 app.include_router(routerNode)
 app.include_router(routerSpace)
 app.include_router(routerNodeRelations)
+app.include_router(routerUser)
 
 # Get the string from .env and split it by the comma into a list
 origins_str = os.getenv("ALLOWED_ORIGINS", "http://localhost:50000")

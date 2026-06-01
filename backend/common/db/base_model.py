@@ -1,5 +1,5 @@
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
-from sqlalchemy import BigInteger, String, FLOAT
+from sqlalchemy import BigInteger, String, FLOAT, CHAR
 
 class Base(DeclarativeBase):
     # abstract class for every table
