@@ -5,7 +5,6 @@ class UserResponse(BaseModel):
     id: int
     email: str
     username: str
-    password: str
     status: str
 
     model_config = {

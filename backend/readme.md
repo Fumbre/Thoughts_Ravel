@@ -7,3 +7,6 @@
 's' = sudo root the owner of creation. can be only one for one node; cannot be delted 
 'rb' = read public
 'rc' = read private
+
+
+valkey-cli

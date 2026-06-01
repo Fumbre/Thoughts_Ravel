@@ -57,3 +57,12 @@ class DB:
     async def get_session(cls) -> AsyncGenerator[AsyncSession,None]:
         async with cls._instance.SessionLocal() as session:
             yield session
+    
+    @classmethod
+    async def close(cls):
+        """Closes the database connection pool gracefully on application shutdown."""
+        if cls._instance is not None:
+            print("[INFO] Closing SQLAlchemy AsyncEngine database connection pool...")
+            # Dispose closes all connections currently held in the pool
+            await cls._instance.engine.dispose()
+            cls._instance = None
