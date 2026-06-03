@@ -15,17 +15,17 @@ const router = createRouter({
     ]
 })
 
-router.beforeEach(async (to) => {
-    const { isAuthenticated, fetchMe } = useAuth()
+// router.beforeEach(async (to) => {
+//     const { isAuthenticated, fetchMe } = useAuth()
 
-    // check auth status on every navigation
-    if (!isAuthenticated.value) await fetchMe()
+//     // check auth status on every navigation
+//     if (!isAuthenticated.value) await fetchMe()
 
-    // redirect to login if not authenticated and route is not public
-    if (!isAuthenticated.value && !to.meta.public) return '/login'
+//     // redirect to login if not authenticated and route is not public
+//     if (!isAuthenticated.value && !to.meta.public) return '/login'
 
-    // redirect to home if already logged in and hitting login/register
-    if (isAuthenticated.value && to.meta.public) return '/'
-})
+//     // redirect to home if already logged in and hitting login/register
+//     if (isAuthenticated.value && to.meta.public) return '/'
+// })
 
 export default router

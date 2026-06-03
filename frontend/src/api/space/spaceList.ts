@@ -5,7 +5,7 @@ import { ApiResponse } from '../response'
 // get space list
 export const fetchSpaceList = async (): Promise<ApiResponse<any>> => {
     try {
-        const res = await apiBaseFetch('/api/space')
+        const res = await apiBaseFetch('/api/space', { credentials: 'include' })
         if (!res.ok) throw new Error('Backend not responding')
         const json = await res.json()
         return json

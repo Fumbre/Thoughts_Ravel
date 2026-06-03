@@ -24,7 +24,7 @@ export const useAuth = () => {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include',  // sends/receives cookies
-            body: JSON.stringify({ username, password })
+            body: JSON.stringify({ login: username, password })
         })
         const json = await res.json()
         if (json.error || json.code !== 200) throw new Error(json.message ?? 'Login failed')

@@ -12,11 +12,14 @@ from common.security.pwd import hash_password, verify_password
 from common.security.token import Token
 from common.redis.redis import Redis
 
+from fastapi import Response
+
+
 import datetime
 import json
 
 @Transactional
-async def insertUser(request: UserRegisterRequest, db: AsyncSession) -> CommonResponse:
+async def insertUser(request: UserRegisterRequest, db: AsyncSession, response: Response) -> CommonResponse:
     email = await getUserInfo(request.email, db)
     if email:
         return CommonResponse.faild(message="email is exist")
@@ -40,7 +43,7 @@ async def insertUser(request: UserRegisterRequest, db: AsyncSession) -> CommonRe
     user_dict = cool_user_model.model_dump() # Converts model parameters into a clean dict
 
     
-    token = await createToken(user_dict)
+    token = await createToken(user_dict, response)
     
     return CommonResponse.success(data=token)
 
@@ -53,7 +56,7 @@ async def getUserInfo(login: str, db: AsyncSession) -> User:
     return data
 
 
-async def login(request: UserLoginRequest, db: AsyncSession) -> CommonResponse:
+async def login(request: UserLoginRequest, db: AsyncSession, response: Response) -> CommonResponse:
     user = await getUserInfo(request.login, db)
     if not user:
         return CommonResponse.faild(message="User doesn't exist")
@@ -66,11 +69,13 @@ async def login(request: UserLoginRequest, db: AsyncSession) -> CommonResponse:
     cool_user = UserResponse.model_validate(user).model_dump()
 
 
-    token = await createToken(cool_user)
+    token = await createToken(cool_user, response)
 
     return CommonResponse.success(data=token)
 
-async def createToken(payload: dict) -> str:
+async def createToken(payload: dict, response: Response) -> str:
+    expired_time = 60*60
+
     time_stamp = datetime.datetime.now().timestamp()
     payload["time_stamp"] = time_stamp
     token = Token.create_access_token(payload)
@@ -78,6 +83,21 @@ async def createToken(payload: dict) -> str:
     if "password" in payload.keys() :
         del payload["password"] # delete password for security
 
-    await Redis.add(payload["id"], json.dumps(payload), 60*60)
+    await Redis.add(payload["id"], json.dumps(payload), expired_time)
+
+    createCookie(response, token, expired_time)
+    
     return token
  
+
+def createCookie(response: Response, token, expired_time):
+
+    return response.set_cookie(
+        key="access_token",
+        value=token,
+        httponly=True,       
+        secure=True,         
+        samesite="lax",     
+        max_age=expired_time,       
+        path="/"             
+    )
