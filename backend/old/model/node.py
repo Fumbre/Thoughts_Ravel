@@ -1,5 +1,5 @@
 from datetime import datetime
-from common.db.base_model import Base, Mapped, mapped_column, BigInteger, String, FLOAT
+from common.db.base_model import Base, Mapped, mapped_column, BigInteger, String
 from common.id.snowflake_id_util import getId
 from sqlalchemy import Text, Integer, CHAR, DateTime, text
 
@@ -52,13 +52,13 @@ class Nodes(Base):
     # Spatial Positioning
     position_x: Mapped[int] = mapped_column(
         "position_x", 
-        FLOAT, 
+        Integer, 
         nullable=False, 
         comment="position X of node"
     )
     position_y: Mapped[int] = mapped_column(
         "position_y", 
-        FLOAT, 
+        Integer, 
         nullable=False, 
         comment="position Y of node"
     )
@@ -99,3 +99,23 @@ class Nodes(Base):
         onupdate=datetime.now, 
         comment="Update time"
     )
+
+
+# class InsideNodes(Base):
+#     __tablename__ = "inside_nodes"
+#     id:Mapped[int] = mapped_column("id", nullable=False, primary_key=True, default=getId)
+
+
+# class NodesRelations(Base):
+#     __tablename__ = "nodes_relations"
+
+#     parentId:Mapped[int] = mapped_column("parentId", BigInteger, nullable=False)
+#     nodeId:Mapped[int] = mapped_column("nodeId", BigInteger, nullable=False)
+#     spaceId:Mapped[int] = mapped_column("spaceId", BigInteger, nullable=False)
+#     userId:Mapped[int] = mapped_column("userId", BigInteger, nullable=False)
+#     public_status:Mapped[str] = mapped_column("public_status", String(1), nullable=False)
+
+#     __table_args__ = (
+#         PrimaryKeyConstraint('parentId', 'nodeId', 'spaceId', 'userId'),
+#     )
+    

@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import SpaceCreationModal from '@/components/Space/SpaceCreationModal.vue'
+import LogoutBtn from '@/components/buttons/LogoutBtn.vue'
 import SpaceList from '@/components/Space/SpaceList.vue'
 
 // space creation modal window
@@ -20,6 +21,11 @@ const onSpaceCreated = () => {
 </script>
 
 <template>
+  <div class="container">
+    <div class="user">
+      <LogoutBtn />
+    </div>
+  </div>
   <div class="spaces__container container">
     <div class="spaces__top">
       <div class="spaces__header">
@@ -42,17 +48,13 @@ const onSpaceCreated = () => {
     </div>
     <SpaceCreationModal v-if="showCreationModal" @close="showCreationModal = false" @created="onSpaceCreated" />
 
-    <SpaceList ref="spaceListRef" :sortOrder="sortOrder" />
+    <!-- <SpaceList ref="spaceListRef" :sortOrder="sortOrder" /> -->
   </div>
 
 </template>
 
 
 <style scoped>
-.spaces__container {
-  padding: 2rem 1.5rem;
-}
-
 .spaces__top {
   display: flex;
   align-items: flex-start;

@@ -1,59 +1,48 @@
 from sqlalchemy import select
-from request.space_request import SpaceRequest, SpaceListRequest
+# from request.space_request import SpaceRequest, SpaceListRequest
 from decorators.decor import Transactional
-from model.space import Space
-from model.node import Node, NodesRelations
+from model.node import Nodes
 from common.db.session import AsyncSession
 from common.response.default import CommonResponse
 from common.id.snowflake_id_util import getId
 
-from service.node_service import insert as node_insert
+# from service.node_service import insert as node_insert
+from request.node_request import NodeSpaceListRequest, NodeSpaceRequest
+from common.filter.user import get_current_user
+from fastapi import Request
 
-from response.space_response import SpaceResponse, SpaceListResponse
 
-CURRENT_USER = 1
 
 @Transactional
-async def insert(request: SpaceListRequest, db: AsyncSession) -> CommonResponse:
-    emptySpaceList = []
-    emptyNodeList = []
-    emptyNodeRelationList = []
+async def insert(request: NodeSpaceListRequest, db: AsyncSession, req: Request) -> CommonResponse:
+    nodeSpace: NodeSpaceRequest = request.nodeSpaceList[0]
 
-    for space in request.spaceList :
-        spaceId = getId()
-        nodeId = getId()
+    user = get_current_user(req)
+    print(user)
 
-        orm_space = Space(**space.model_dump())
-        orm_space.id = spaceId
+    ancestor = '0'
 
-        # orm_node = Node(**node.model_dump())
-        node = Node(
-            id=nodeId,
-            name=orm_space.title,
-            positionX= 0,
-            positionY= 0,
-            color='blue',
-            shape='circle',
-            creater_id=CURRENT_USER
-        )
+    nodeSpaceList =  []
 
-        nodesRelations = NodesRelations(
-            parentId = 0,
-            nodeId = nodeId,
-            spaceId = spaceId,
-            userId = CURRENT_USER,
-            public_status = 'r'
-        )
+    if nodeSpace.parent_id != 0:
+        node = db.scalar(select(Nodes).where(Nodes.id == nodeSpace.parent_id))    
+        ancestor = node.ancestor + ',' + nodeSpace.parent_id
 
-        emptyNodeList.append(node)
-        emptyNodeRelationList.append(nodesRelations)
-        emptySpaceList.append(orm_space)
+    for nodeSpaceItem in request.nodeSpaceList:
+        id = getId()
+        nodeSpaceItem = Nodes(**nodeSpaceItem.model_dump())
+        nodeSpaceItem.id = id
+        nodeSpaceItem.creater_id = user["id"]
+        nodeSpaceItem.ancestor = ancestor
 
-    db.add_all(emptySpaceList)
-    db.add_all(emptyNodeList)
-    db.add_all(emptyNodeRelationList)
+        nodeSpaceList.append(nodeSpaceItem)
+
+    db.add_all(nodeSpaceList)
 
     return CommonResponse.success()
+       
+
+
 
 async def get(id: str, userId: str, db: AsyncSession) -> CommonResponse[SpaceResponse]:
     data = await db.scalar(select(Space).where(Space.id == int(id), Space.userId == int(userId)))

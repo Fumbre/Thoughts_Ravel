@@ -1,23 +1,8 @@
-const BASE = import.meta.env.VITE_API_BASE_URL;
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-export async function apiBaseFetch(
-    endpoint: string,
-    options: RequestInit = {},
-    token?: string
-): Promise<Response> {
-
-    const headers = new Headers(options.headers);
-
-    if (!headers.has("Content-Type")) {
-        headers.set("Content-Type", "application/json");
-    }
-
-    if (token) {
-        headers.set("Authorization", `${token}`);
-    }
-
-    return fetch(`${BASE}${endpoint}`, {
+export const apiBaseFetch = (url: string, options: RequestInit = {}): Promise<Response> => {
+    return fetch(`${BASE_URL}${url}`, {
+        credentials: 'include',  // send cookies
         ...options,
-        headers: headers
-    });
+    })
 }

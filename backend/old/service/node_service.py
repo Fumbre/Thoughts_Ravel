@@ -1,7 +1,7 @@
 from sqlalchemy import select
 from request.node_request import NodeRequest, NodeListRequest, NodeConnectionRequest
 from decorators.decor import Transactional
-from model.node import Node
+from backend.model.node import Node
 from common.db.session import AsyncSession
 from common.response.default import CommonResponse
 

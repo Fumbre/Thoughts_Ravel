@@ -19,6 +19,7 @@ interface IPostNodeParent {
 
 
 
+
 // This method should be done in database
 // 1
 // 2
@@ -67,4 +68,3 @@ export const postNodeToNode = async (nodeChild: IPostNodeChild, nodeParent: IPos
         }
     }
 }
-

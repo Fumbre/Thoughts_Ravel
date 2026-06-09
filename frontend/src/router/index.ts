@@ -8,24 +8,34 @@ import InsideSpaceView from '@/views/InsideSpaceView.vue'
 const router = createRouter({
     history: createWebHistory(),
     routes: [
-        { path: '/login', component: LoginView, meta: { public: true } },
-        { path: '/register', component: RegisterView, meta: { public: true } },
+
+        { path: '/login', component: LoginView, meta: { public: true, guestOnly: true } },
+        { path: '/register', component: RegisterView, meta: { public: true, guestOnly: true } },
         { path: '/', component: SpaceView },
         { path: '/space/:id', component: InsideSpaceView },
     ]
 })
 
-// router.beforeEach(async (to) => {
-//     const { isAuthenticated, fetchMe } = useAuth()
+router.beforeEach(async (to) => {
+    const { isAuthenticated, initialized, fetchMe } = useAuth()
 
-//     // check auth status on every navigation
-//     if (!isAuthenticated.value) await fetchMe()
+    if (!initialized.value) {
+        await fetchMe()
+    }
 
-//     // redirect to login if not authenticated and route is not public
-//     if (!isAuthenticated.value && !to.meta.public) return '/login'
+    const authed = isAuthenticated.value
+    const isPublic = to.meta.public
+    const isGuestOnly = to.meta.guestOnly
 
-//     // redirect to home if already logged in and hitting login/register
-//     if (isAuthenticated.value && to.meta.public) return '/'
-// })
+    console.log('user is', authed)
+
+    // If not logged in and trying to access a protected route send to login
+    if (!authed && !isPublic) return '/login'
+
+    // If logged in and trying to access a GUEST-ONLY route (login/register) send to root
+    if (authed && isGuestOnly) return '/'
+
+    return true
+})
 
 export default router

@@ -1,11 +1,8 @@
 <script setup>
 import { ref } from 'vue'
-import { postSpaceList } from '@/api/space/spaceList'
+import { postNodeSpaceList } from '@/api/node/nodeSpaceList'
 
 const emit = defineEmits(['created', 'close'])
-
-// Things to change after token
-const userId = 1
 
 const title = ref('')
 const loading = ref(false)
@@ -13,13 +10,21 @@ const error = ref(null)
 
 const handleSubmit = async () => {
   const titleClean = title.value.trim() // clean spaces
-
   if (!titleClean) return
   loading.value = true
   error.value = null
 
   try {
-    const res = await postSpaceList([{ userId: userId, title: titleClean }])
+
+    const res = await postNodeSpaceList([{
+      name: titleClean,
+      parent_id: 0,
+      type: '1',
+      position_x: 0,
+      position_y: 0,
+      shape: 'circle',
+      color: 'blue'
+    }])
 
     if (res.error) throw new Error('Failed to create space')
 

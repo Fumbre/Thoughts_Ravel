@@ -1,21 +1,6 @@
 import { apiBaseFetch } from "../../tools/api"
 import { ApiResponse } from '../response'
 
-
-// get space list
-export const fetchSpaceList = async (): Promise<ApiResponse<any>> => {
-    try {
-        const res = await apiBaseFetch('/api/space', { credentials: 'include' })
-        if (!res.ok) throw new Error('Backend not responding')
-        const json = await res.json()
-        return json
-    } catch (err: unknown) {
-        return {
-            error: err instanceof Error ? err.message : 'Unknown error'
-        }
-    }
-}
-
 interface IPostSpaceList {
     name: string,
     parent_id: string,
@@ -27,7 +12,7 @@ interface IPostSpaceList {
     color: string,
 }
 
-// post space list
+// post node space list
 export const postNodeSpaceList = async (list: Array<IPostSpaceList>): Promise<ApiResponse<any>> => {
     try {
         console.log(list)

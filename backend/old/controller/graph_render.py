@@ -1,16 +1,16 @@
 # controller/graph_render.py
-
 from fastapi.routing import APIRouter
 from fastapi import Depends
 from common.db.session import DB, AsyncSession
 from representation_engin.main import generate_graph
-from common.response.default import CommonResponse
-
+from service.node_relations_service import get as get_node_relations
 # from service.node_service import get as get_node
-# from service.node_relations_service import get as get_node_relations
-# from service.space_service import get as get_space, get_nodes_by_space
+from common.response.default import CommonResponse
+from service.space_service import get as get_space, get_nodes_by_space
 
 router = APIRouter(prefix='/api')
+
+CURRENT_USER_ID = "1"  # mock, replace with JWT later
 
 @router.get("/graph/{spaceId}")
 async def get_graph(spaceId: str, db: AsyncSession = Depends(DB.get_session)) -> CommonResponse:
