@@ -1,18 +1,18 @@
-from pydantic import BaseModel
-from typing import TypeVar, Optional, Generic, Type, Callable, Any
-from datetime import datetime 
+from pydantic import BaseModel, ConfigDict
+from typing import Optional, List
 
+class NodeCorrelationResponse(BaseModel):
+    # Enables automatic mapping from SQLAlchemy ORM objects
+    model_config = ConfigDict(from_attributes=True)
 
-class NodeCorrelationsResponse(BaseModel):
     parent_node_id: int
     destination_node_id: int
     name: str
-    
-
-    model_config = {
-        "from_attributes": True  # Pydantic v2 equivalent of orm_mode
-    }
-
+    description: Optional[str] = None
+    type: Optional[str] = '0'
 
 class NodeCorrelationsListResponse(BaseModel):
-    nodeCorrelationsList: Optional[list[NodeCorrelationsResponse]]
+    model_config = ConfigDict(from_attributes=True)
+    
+    # Defaults to an empty list if no correlations are present
+    nodeCorrelationsList: List[NodeCorrelationResponse] = []

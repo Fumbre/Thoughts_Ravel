@@ -28,12 +28,16 @@ def generate_graph(root: NodeResponse, nodes: NodeListResponse, correlations: No
         )
     
     # Inject edges from correlations list
-    if len(correlations) > 0:
+    if len(correlations.nodeCorrelationsList) > 0:
+        print(correlations.nodeCorrelationsList)
         for rel in (correlations.nodeCorrelationsList or []):
 
+            parent_str = str(rel.parent_node_id)
+            dest_str = str(rel.destination_node_id)
+
             # Check to avoid isolated edge crashes if a reference node is missing
-            if G.has_node(rel.parent_node_id) and G.has_node(rel.destination_node_id):
-                G.add_edge(rel.parent_node_id, rel.destination_node_id, label=rel.name)
+            if G.has_node(parent_str) and G.has_node(dest_str):
+                G.add_edge(parent_str, dest_str, label=rel.name)
             
     # Transform NetworkX structure directly to front-end ready dictionaries
     vis_nodes = []

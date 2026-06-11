@@ -3,7 +3,8 @@ import { useRouter } from 'vue-router'
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 import GraphCanvas from '@/components/Graph/GraphCanvas.vue'
-import { postNodeEdge } from '@/api/node/node'
+import { postNodeEdge, updateNodePos } from '@/api/node/node'
+
 
 const route = useRoute()
 const spaceId = route.params.id
@@ -23,21 +24,29 @@ const onNodeClick = (nodeId) => {
         // route.push(`/node/${nodeId}`)
     }
 }
-const onNodeMoved = ({ id, x, y }) => {
+const onNodeMoved = async ({ id, x, y }) => {
     console.log('node moved:', id, x, y)
+    try {
+        const res = await updateNodePos(id, x, y)
+    } catch (error) {
+        console.log(error)
+    }
     // save position to DB later
 }
 
 const addNode = async () => {
 
+    const space = window.location.pathname.replace('/space/', '')
+    console.log(space)
 
     const node = [{
+        space_id: space,
         name: "test",
         description: 'go ahead',
         type: '0',
         shape: 'circle',
         color: 'black',
-        parent_id: selectedNodeId.value
+        parent_node_id: selectedNodeId.value
     }]
     try {
         const re = await postNodeEdge(node)

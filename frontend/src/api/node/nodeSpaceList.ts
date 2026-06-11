@@ -2,8 +2,9 @@ import { apiBaseFetch } from "../../tools/api"
 import { ApiResponse } from '../response'
 
 interface IPostSpaceList {
+    space_id: string,
     name: string,
-    parent_id: string,
+    parent_node_id: string,
     description: string | null,
     type: string,
     position_x: number,

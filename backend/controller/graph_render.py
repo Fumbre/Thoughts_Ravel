@@ -9,7 +9,7 @@ from representation_engin.generate_graph import generate_graph
 # from service.node_service import get as get_node
 # from service.node_relations_service import get as get_node_relations
 # from service.space_service import get as get_space, get_nodes_by_space
-from service.node_service import get_user_nodes_by_parent, get_user_node
+from service.node_service import get_user_nodes_by_parent, get_user_node, get_node_correlation
 
 router = APIRouter(prefix='/api')
 
@@ -23,9 +23,16 @@ async def get_graph(request: Request, space_id: str, db: AsyncSession = Depends(
 
     if nodes.code != 200:
         return CommonResponse.response(code=401, message="Node is not exists for this user")
+    
+    correlation = await get_node_correlation(space_id, nodes.data, db)
+
+    if correlation.code != 200:
+        return CommonResponse.response(code=401, message="correlation is not exists")
+    
 
     root_node = root_node.data
     nodes = nodes.data
+    correlation = correlation.data
     
 
     # print(nodes)
@@ -34,7 +41,7 @@ async def get_graph(request: Request, space_id: str, db: AsyncSession = Depends(
     graph_data = generate_graph(
         root=root_node,
         nodes=nodes,
-        correlations=[]
+        correlations=correlation
     )
 
     return CommonResponse.success(data=graph_data)

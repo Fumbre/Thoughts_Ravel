@@ -1,18 +1,19 @@
-from sqlalchemy import select
+from sqlalchemy import select, and_, update
 # from request.space_request import SpaceRequest, SpaceListRequest
 from decorators.decor import Transactional
 from model.node import Nodes
+from model.node_correlation import NodeCorrelations
 from common.db.session import AsyncSession
 from common.response.default import CommonResponse
 from common.id.snowflake_id_util import getId
 
 # from service.node_service import insert as node_insert
-from request.node_request import NodeSpaceListRequest, NodeSpaceRequest
+from request.node_request import NodeSpaceListRequest, NodeSpaceRequest, NodeEdgeListRequest
 from response.node_response import NodeResponse, NodeListResponse
 from response.user_response import UserResponse
+from response.node_correlations_response import NodeCorrelationsListResponse, NodeCorrelationResponse
 from common.filter.user import get_current_user
 from fastapi import Request
-
 
 
 @Transactional
@@ -29,8 +30,8 @@ async def insert(request: NodeSpaceListRequest, db: AsyncSession, req: Request) 
         node_orm = await db.scalar(select(Nodes).where(Nodes.id == nodeSpace.parent_id))
         node = NodeResponse.model_validate(node_orm)
         ancestor = f"{node.ancestor },{nodeSpace.parent_id}"
-        position_x = node.position_x - 50
-        position_y = node.position_y + 50
+        # position_x = node.position_x - 50
+        # position_y = node.position_y + 50
 
     for nodeSpaceItem in request.nodeSpaceList:
         id = getId()
@@ -38,14 +39,17 @@ async def insert(request: NodeSpaceListRequest, db: AsyncSession, req: Request) 
         nodeSpaceItem.id = id
         nodeSpaceItem.creater_id = user["id"]
         nodeSpaceItem.ancestor = ancestor
-        nodeSpaceItem.position_x = position_x or nodeSpaceItem.position_x
-        nodeSpaceItem.position_y = position_y or nodeSpaceItem.position_y
+        # nodeSpaceItem.position_x = position_x or nodeSpaceItem.position_x
+        # nodeSpaceItem.position_y = position_y or nodeSpaceItem.position_y
 
         nodeSpaceList.append(nodeSpaceItem)
 
     db.add_all(nodeSpaceList)
 
-    return CommonResponse.success(data=nodeSpaceList)
+    validated_nodes = [NodeResponse.model_validate(item) for item in nodeSpaceList]
+    response_payload = NodeListResponse(nodeList=validated_nodes)
+
+    return CommonResponse.success(data=response_payload)
        
 
 async def get_user_nodes_by_parent(request: Request, parent_id: int, db: AsyncSession) -> CommonResponse[NodeListResponse]:
@@ -76,26 +80,70 @@ async def get_user_node(request: Request, node_id: int, db: AsyncSession) -> Nod
 
     return CommonResponse.success(data=result)
 
-
-
-
-
-# async def get_all(userId: str, db: AsyncSession) -> CommonResponse[SpaceListResponse]:
-#     data = await db.scalars(select(Space).where(Space.userId == int(userId)))
-#     results = data.all()
-#     results = [SpaceResponse.model_validate(row) for row in results]
+@Transactional
+async def make_node_edge(nodes: NodeListResponse, edges: NodeEdgeListRequest, db: AsyncSession) -> CommonResponse:
+    print("nodes are:", nodes)
+    print("edges is:", edges)
     
-#     for result in results:
-#         result.id = str(result.id)
+    correlations_to_add = [
+        NodeCorrelations(
+            parent_node_id=edge.parent_node_id,
+            destination_node_id=node.id,
+            name=edge.name
+        )
+        for node in (nodes.nodeList or [])
+        for edge in (edges.nodeEdgeList or [])
+    ]
 
-#     return CommonResponse.success(data=SpaceListResponse(spaceList=results))
+    # Stage and save the records inside your current transactional block
+    if correlations_to_add:
+        db.add_all(correlations_to_add)
+        await db.flush()
 
 
-# # in theory it should be in node service
-# async def get_nodes_by_space(spaceId: str, db: AsyncSession):
-#     result = await db.scalars(
-#         select(Node)
-#         .join(NodesRelations, Node.id == NodesRelations.nodeId)
-#         .where(NodesRelations.spaceId == int(spaceId))
-#     )
-#     return result.all()
+    return CommonResponse.success()
+
+
+async def get_node_correlation(root_id: str, nodes: NodeListResponse, db: AsyncSession) -> CommonResponse[NodeCorrelationsListResponse]:
+    # 1. Gather all unique node IDs that are visible in this specific space view
+    # Start with the root space ID itself
+    visible_node_ids = {int(root_id)}
+    
+    # Add every child node ID from your pre-fetched list
+    for node in (nodes.nodeList or []):
+        visible_node_ids.add(node.id)
+
+    # Safety check: If there are no nodes at all, don't hit the DB
+    if not visible_node_ids:
+        return NodeCorrelationsListResponse(nodeCorrelationsList=[])
+
+    # 2. SQL Request: Fetch only correlations where BOTH nodes are currently visible on your canvas
+    stmt = select(NodeCorrelations).where(
+        and_(
+            NodeCorrelations.parent_node_id.in_(visible_node_ids),
+            NodeCorrelations.destination_node_id.in_(visible_node_ids)
+        )
+    )
+    
+    # Execute the query asynchronously
+    result = await db.scalars(stmt)
+    correlations_orm = result.all()
+    
+    # 3. Serialize your database rows directly into your Pydantic schema layout
+    validated_correlations = [
+        NodeCorrelationResponse.model_validate(c) for c in correlations_orm
+    ]
+    
+    return CommonResponse.success(data=NodeCorrelationsListResponse(nodeCorrelationsList=validated_correlations))
+
+
+@Transactional
+async def update_position(node_id: int, position_x: float, position_y: float, db: AsyncSession) -> CommonResponse:
+    stmt = (
+        update(Nodes)
+        .where(Nodes.id == node_id)
+        .values(position_x=position_x, position_y=position_y)
+    )
+    
+    await db.execute(stmt)
+    return CommonResponse.success(message="Node coordinates successfully updated")
