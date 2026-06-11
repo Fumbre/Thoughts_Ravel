@@ -3,6 +3,7 @@ import { ref, onMounted, watch, nextTick } from 'vue'
 import { Network } from 'vis-network/standalone'
 import { apiBaseFetch } from '@/tools/api'
 import { fetchGraph } from '@/api/graph/graph'
+// import { getNodeById } from '@/api/node/node'
 
 const props = defineProps({
     spaceId: { type: String, required: true }

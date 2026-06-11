@@ -1,5 +1,6 @@
 from typing import Optional
 from fastapi import Request
 
-def get_current_user(request: Request):
+
+def get_current_user(request: Request) :
     return getattr(request.state, "user", None)

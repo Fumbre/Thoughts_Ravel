@@ -5,7 +5,7 @@ from request.node_request import NodeSpaceListRequest
 from fastapi import Depends
 from response.space_response import SpaceResponse, SpaceListResponse
 
-from service.space_service import insert, get, get_all
+from service.node_service import insert, get, get_all
 
 
 

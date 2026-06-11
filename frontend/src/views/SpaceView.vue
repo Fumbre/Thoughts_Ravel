@@ -48,7 +48,7 @@ const onSpaceCreated = () => {
     </div>
     <SpaceCreationModal v-if="showCreationModal" @close="showCreationModal = false" @created="onSpaceCreated" />
 
-    <!-- <SpaceList ref="spaceListRef" :sortOrder="sortOrder" /> -->
+    <SpaceList ref="spaceListRef" :sortOrder="sortOrder" />
   </div>
 
 </template>

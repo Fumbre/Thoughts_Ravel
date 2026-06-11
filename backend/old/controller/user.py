@@ -25,7 +25,7 @@ async def loginUser(request: UserLoginRequest, response: Response, db:AsyncSessi
 @router.get('/me')
 async def getUser(request: Request):
     user = get_current_user(request)
-    print(user)
+    # print(user)
     if not user:
         return CommonResponse.faild(message="Not authenticated")
     return CommonResponse.success(data=user)

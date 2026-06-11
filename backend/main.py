@@ -4,7 +4,7 @@ import uvicorn
 from controller.user import router as routerUser
 from controller.node import router as routerNode
 from controller.ai_chat import router as routerAI
-# from controller.graph_render import router as routerGraph
+from controller.graph_render import router as routerGraph
 # from controller.space import router as routerSpace
 # from controller.node_relations import router as routerNodeRelations
 from fastapi import FastAPI
@@ -19,7 +19,7 @@ app = FastAPI(lifespan=lifespan)
 app.include_router(routerUser)
 app.include_router(routerNode)
 app.include_router(routerAI)
-# app.include_router(routerGraph)
+app.include_router(routerGraph)
 # app.include_router(routerSpace)
 # app.include_router(routerNodeRelations)
 

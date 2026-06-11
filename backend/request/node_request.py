@@ -15,3 +15,16 @@ class NodeSpaceRequest(BaseModel):
 
 class NodeSpaceListRequest(BaseModel):
     nodeSpaceList: Optional[list[NodeSpaceRequest]]
+
+class NodeEdgeRequest(BaseModel):
+    name: str
+    description: Optional[str] = None
+    type: str
+    shape: str
+    color: str
+    parent_id: int
+    
+
+class NodeEdgeListRequest(BaseModel):
+    nodeEdgeList: Optional[list[NodeEdgeRequest]]
+    

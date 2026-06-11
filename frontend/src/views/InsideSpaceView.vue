@@ -3,7 +3,7 @@ import { useRouter } from 'vue-router'
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 import GraphCanvas from '@/components/Graph/GraphCanvas.vue'
-import { postNodeToNode } from '../api/node/node'
+import { postNodeEdge } from '@/api/node/node'
 
 const route = useRoute()
 const spaceId = route.params.id
@@ -20,7 +20,7 @@ const onNodeClick = (nodeId) => {
         selectedNodeName.value = nodeId  // temp, replace with actual name
     } else {
         // navigate to node page
-        route.push(`/node/${nodeId}`)
+        // route.push(`/node/${nodeId}`)
     }
 }
 const onNodeMoved = ({ id, x, y }) => {
@@ -28,26 +28,23 @@ const onNodeMoved = ({ id, x, y }) => {
     // save position to DB later
 }
 
-const addNode = () => {
-    const testChild = {
-        name: 'my nanme',
-        desc: 'string | null',
-        positionX: 23,
-        positionY: 23,
-        color: "blue",
-        shape: "circle",
-        creater_id: 1,
+const addNode = async () => {
+
+
+    const node = [{
+        name: "test",
+        description: 'go ahead',
+        type: '0',
+        shape: 'circle',
+        color: 'black',
+        parent_id: selectedNodeId.value
+    }]
+    try {
+        const re = await postNodeEdge(node)
+        console.log("[insdie space view]", re)
+    } catch (error) {
+        console.log(error)
     }
-
-    const testParent = {
-        nodeId: "7463519295578836993",
-        spaceId: "7463520655892287488",
-        userId: "1",
-    }
-
-
-    const re = postNodeToNode(testChild, testParent)
-    console.log("[insdie space view]", re)
 }
 
 </script>

@@ -2,11 +2,11 @@
 from fastapi.routing import APIRouter
 from fastapi import Depends
 from common.db.session import DB, AsyncSession
-from representation_engin.main import generate_graph
+from representation_engin.generate_graph import generate_graph
 from service.node_relations_service import get as get_node_relations
 # from service.node_service import get as get_node
 from common.response.default import CommonResponse
-from service.space_service import get as get_space, get_nodes_by_space
+from service.node_service import get as get_space, get_nodes_by_space
 
 router = APIRouter(prefix='/api')
 
