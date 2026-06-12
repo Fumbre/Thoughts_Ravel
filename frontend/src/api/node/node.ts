@@ -17,16 +17,22 @@ export const getNodeById = async (node_id: string): Promise<ApiResponse<any>> =>
 }
 
 interface IPostNodeEdge {
+    space_id: string
     name: string,
     description: string | null,
     type: string,
     shape: string,
     color: string,
-    parent_id: string
+    parent_node_id: string,
+
+    parent_pos_x: number,
+    parent_pos_y: number,
+    label: string | null
 }
 
 export const postNodeEdge = async (list: Array<IPostNodeEdge>): Promise<ApiResponse<any>> => {
     try {
+        console.log(list)
         const res = await apiBaseFetch('/api/node', {
             method: "POST",
             headers: { 'Content-Type': 'application/json' },

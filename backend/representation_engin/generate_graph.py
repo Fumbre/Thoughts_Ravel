@@ -5,6 +5,8 @@ from response.node_correlations_response import NodeCorrelationsListResponse
 def generate_graph(root: NodeResponse, nodes: NodeListResponse, correlations: NodeCorrelationsListResponse):
     # Initialize NetworkX Directed Graph
     G = nx.DiGraph()
+
+    print("this is my life",correlations)
     
     # Add root node with full layout properties
     G.add_node(
@@ -29,7 +31,6 @@ def generate_graph(root: NodeResponse, nodes: NodeListResponse, correlations: No
     
     # Inject edges from correlations list
     if len(correlations.nodeCorrelationsList) > 0:
-        print(correlations.nodeCorrelationsList)
         for rel in (correlations.nodeCorrelationsList or []):
 
             parent_str = str(rel.parent_node_id)
@@ -52,7 +53,6 @@ def generate_graph(root: NodeResponse, nodes: NodeListResponse, correlations: No
         })
         
     vis_edges = []
-    
     for source, target, data in G.edges(data=True):
         vis_edges.append({
             "from": source,

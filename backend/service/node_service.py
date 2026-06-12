@@ -82,15 +82,13 @@ async def get_user_node(request: Request, node_id: int, db: AsyncSession) -> Nod
 
 @Transactional
 async def make_node_edge(nodes: NodeListResponse, edges: NodeEdgeListRequest, db: AsyncSession) -> CommonResponse:
-    print("nodes are:", nodes)
-    print("edges is:", edges)
     
     correlations_to_add = [
         NodeCorrelations(
             parent_node_id=edge.parent_node_id,
             destination_node_id=node.id,
-            name=edge.name
-        )
+            name=edge.label
+        )   
         for node in (nodes.nodeList or [])
         for edge in (edges.nodeEdgeList or [])
     ]
@@ -105,7 +103,6 @@ async def make_node_edge(nodes: NodeListResponse, edges: NodeEdgeListRequest, db
 
 
 async def get_node_correlation(root_id: str, nodes: NodeListResponse, db: AsyncSession) -> CommonResponse[NodeCorrelationsListResponse]:
-    # 1. Gather all unique node IDs that are visible in this specific space view
     # Start with the root space ID itself
     visible_node_ids = {int(root_id)}
     
@@ -117,7 +114,6 @@ async def get_node_correlation(root_id: str, nodes: NodeListResponse, db: AsyncS
     if not visible_node_ids:
         return NodeCorrelationsListResponse(nodeCorrelationsList=[])
 
-    # 2. SQL Request: Fetch only correlations where BOTH nodes are currently visible on your canvas
     stmt = select(NodeCorrelations).where(
         and_(
             NodeCorrelations.parent_node_id.in_(visible_node_ids),
@@ -129,10 +125,12 @@ async def get_node_correlation(root_id: str, nodes: NodeListResponse, db: AsyncS
     result = await db.scalars(stmt)
     correlations_orm = result.all()
     
-    # 3. Serialize your database rows directly into your Pydantic schema layout
+    # Serialize  database rows directly into Pydantic schema layout
     validated_correlations = [
         NodeCorrelationResponse.model_validate(c) for c in correlations_orm
     ]
+
+    print("testing:", visible_node_ids)
     
     return CommonResponse.success(data=NodeCorrelationsListResponse(nodeCorrelationsList=validated_correlations))
 

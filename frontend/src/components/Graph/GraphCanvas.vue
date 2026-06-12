@@ -15,7 +15,11 @@ const graphElement = ref(null)
 const error = ref(null)
 let network = null
 
+let rawNodesReference = []
+
 const initNetwork = (data) => {
+    rawNodesReference = data.nodes || []
+
     network = new Network(graphElement.value, data, {
         physics: { enabled: false },
         edges: {
@@ -25,8 +29,17 @@ const initNetwork = (data) => {
     })
 
     network.on('click', ({ nodes }) => {
-        console.log(nodes)
-        if (nodes.length > 0) emit('nodeClick', nodes[0])
+        const clickedNodeId = nodes[0]
+
+        const fullNodeData = rawNodesReference.find(n => String(n.id) === String(clickedNodeId))
+
+        if (fullNodeData) {
+            // Emit the entire matching dictionary object up to the parent layer
+            emit('nodeClick', fullNodeData)
+        } else {
+            // Fallback: emit the raw ID if lookups fail
+            emit('nodeClick', { id: clickedNodeId })
+        }
     })
 
     network.on('dragEnd', ({ nodes }) => {

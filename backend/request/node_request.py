@@ -29,7 +29,9 @@ class NodeEdgeRequest(BaseModel):
     shape: str
     color: str
     parent_node_id: int
-    
+    parent_pos_x: float
+    parent_pos_y: float
+    label: Optional[str]
 
 class NodeEdgeListRequest(BaseModel):
     nodeEdgeList: Optional[list[NodeEdgeRequest]]

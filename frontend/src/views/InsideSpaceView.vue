@@ -2,6 +2,7 @@
 import { useRouter } from 'vue-router'
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
+import NodeModal from '@/components/Node/NodeModal.vue'
 import GraphCanvas from '@/components/Graph/GraphCanvas.vue'
 import { postNodeEdge, updateNodePos } from '@/api/node/node'
 
@@ -10,15 +11,14 @@ const route = useRoute()
 const spaceId = route.params.id
 
 const editMode = ref(false)
-const selectedNodeId = ref(null)
-const selectedNodeName = ref(null)
+const selectedNode = ref(null)
 
-const onNodeClick = (nodeId) => {
+const onNodeClick = (node) => {
     if (editMode.value) {
         // select node for editing, no navigation
-        selectedNodeId.value = nodeId
+        selectedNode.value = node
         // you'll fetch node name here later
-        selectedNodeName.value = nodeId  // temp, replace with actual name
+        console.log(selectedNode.value)
     } else {
         // navigate to node page
         // route.push(`/node/${nodeId}`)
@@ -34,23 +34,35 @@ const onNodeMoved = async ({ id, x, y }) => {
     // save position to DB later
 }
 
-const addNode = async () => {
+const showModal = ref(false)
+
+const addNode = () => {
+    showModal.value = true
+}
+
+const handleConfirm = async (data) => {
+    showModal.value = false
+    console.log(data)
 
     const space = window.location.pathname.replace('/space/', '')
     console.log(space)
 
     const node = [{
         space_id: space,
-        name: "test",
-        description: 'go ahead',
+        name: data.name,
+        description: data.description,
         type: '0',
         shape: 'circle',
-        color: 'black',
-        parent_node_id: selectedNodeId.value
+        color: `${data.color}`,
+        parent_node_id: selectedNode.value.id,
+
+        parent_pos_x: selectedNode.value.x,
+        parent_pos_y: selectedNode.value.y,
+        label: data.description
     }]
     try {
         const re = await postNodeEdge(node)
-        console.log("[insdie space view]", re)
+        console.log("[insdie space view]", node)
     } catch (error) {
         console.log(error)
     }
@@ -59,6 +71,8 @@ const addNode = async () => {
 </script>
 
 <template>
+    <NodeModal v-if="showModal" @confirm="handleConfirm" @cancel="showModal = false" />
+
     <div class="inside-space__container container">
         <h2>inside space: {name of the space}</h2>
         <div class="node__editor flex">
@@ -79,7 +93,7 @@ const addNode = async () => {
             <h3>Actions on specific node</h3>
             <ul class="panel-edit-node__list">
                 <li class="panel-edit-node__item">
-                    <span>selected node: {{ selectedNodeName ?? 'Node is not selected' }}</span>
+                    <span>selected node: {{ selectedNode?.label ?? 'Node is not selected' }}</span>
                 </li>
                 <li class="panel-edit-node__item">
                     <button class="btn-green-light" @click="addNode">add node</button>
@@ -102,7 +116,6 @@ const addNode = async () => {
                     <button class="btn-red">remove al lot of nodes</button>
                 </li>
             </ul>
-            <button class="btn-accept">save your changes</button>
         </div>
 
 

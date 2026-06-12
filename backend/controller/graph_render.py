@@ -19,6 +19,7 @@ async def get_graph(request: Request, space_id: str, db: AsyncSession = Depends(
     if root_node.code != 200:
         return CommonResponse.response(code=401, message="Node is not exists for this user")
         
+    # get user nodes by ancesstors
     nodes = await get_user_nodes_by_parent(request= request, parent_id=int(space_id), db=db)
 
     if nodes.code != 200:
@@ -35,8 +36,9 @@ async def get_graph(request: Request, space_id: str, db: AsyncSession = Depends(
     correlation = correlation.data
     
 
-    # print(nodes)
-    # print(root_node)
+    print("root_node",root_node)
+    print("nodes",nodes)
+    print("correlation", correlation)
     
     graph_data = generate_graph(
         root=root_node,

@@ -34,8 +34,8 @@ async def postNodeEdge(request: Request, body: NodeEdgeListRequest) -> str:
             type=edge.type,
             shape=edge.shape,
             color=edge.color,
-            position_x=0.0,
-            position_y=0.0
+            position_x=edge.parent_pos_x - 50,
+            position_y=edge.parent_pos_y + 50
         )
         mapped_space_nodes.append(space_node)
 
