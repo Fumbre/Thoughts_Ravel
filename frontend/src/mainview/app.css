@@ -20,6 +20,12 @@ body {
 	margin: 0 0 15px;
 }
 
+.list {
+	margin: 0;
+	padding: 0;
+	list-style-type: none;
+}
+
 .main {
 	position: relative;
 }
@@ -67,7 +73,6 @@ body {
 .btn-switch--active::after {
 	transform: translateX(20px);
 }
-
 
 .btn {
 	font-size: 14px;

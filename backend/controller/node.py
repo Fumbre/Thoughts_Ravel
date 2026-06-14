@@ -1,28 +1,65 @@
 from common.db.session import DB, AsyncSession
 from fastapi.routing import APIRouter
 from common.response.default import CommonResponse
-from request.node_request import NodeRequest, NodeListRequest, NodeConnectionRequest
-from fastapi import Depends
-from response.node_response import NodeResponse
+from fastapi import Depends, Request, Response
+from request.node_request import NodeSpaceListRequest, NodeEdgeListRequest, NodeSpaceRequest, NodePositionUpdateRequest
+from service.node_service import insert, get_user_nodes_by_parent, get_user_node, make_node_edge, update_position
 
-from service.node_service import insert, get, insert_connection
 
 router = APIRouter(prefix='/api')
 
+
+@router.get('/node/{node_id}')
+async def getUserNode(request: Request, node_id: str ,db:AsyncSession = Depends(DB.get_session)) -> CommonResponse:
+    return await get_user_node(request = request, db = db, node_id = int(node_id))
+
+@router.patch('/node')
+async def updateNodePos(body: NodePositionUpdateRequest)-> CommonResponse:
+    return await update_position(
+        node_id=int(body.id), 
+        position_x=body.position_x, 
+        position_y=body.position_y, 
+    )
+
+
 @router.post('/node')
-async def createNode(request: NodeListRequest) -> CommonResponse:
+async def postNodeEdge(request: Request, body: NodeEdgeListRequest) -> CommonResponse:
     print(request)
-    return await insert(request)
+    mapped_space_nodes = []
+    
+    for edge in (body.nodeEdgeList or []):  # Use the exact list field name from your request model
+        space_node = NodeSpaceRequest(
+            name=edge.name,
+            parent_id=edge.space_id,
+            description=edge.description,
+            type=edge.type,
+            shape=edge.shape,
+            color=edge.color,
+            position_x=edge.parent_pos_x - 50,
+            position_y=edge.parent_pos_y + 50
+        )
+        mapped_space_nodes.append(space_node)
 
-@router.get('/node/{id}')
-async def getNode(id: str, db:AsyncSession = Depends(DB.get_session)) -> CommonResponse[NodeResponse]:
-    return await get(id=id, db=db)
+    space_list_payload = NodeSpaceListRequest(nodeSpaceList=mapped_space_nodes)
 
-@router.post('/node_connection')
-async def createNode_connection(request: NodeConnectionRequest) -> CommonResponse:
-    print(request)
-    return await insert_connection(request)
+    created_nodes = await insert(request=space_list_payload, req=request)
+    if created_nodes.code != 200:
+        return CommonResponse.faild()
+    
+    result = await make_node_edge(created_nodes.data, body)
+    if result.code != 200:
+        return CommonResponse.faild()
+    
+    result = result.data
 
+    # print(result)
 
-# @router.get('/node')
-# async def createNode():
+    return CommonResponse.success(data=result)
+
+@router.post('/space')
+async def createNodeSpace(request: Request, body: NodeSpaceListRequest) -> CommonResponse:
+    return await insert(request = body, req = request)
+
+@router.get('/space')
+async def getUserNodesSpaces(request: Request, parent_id: str ,db:AsyncSession = Depends(DB.get_session)) -> CommonResponse:
+    return await get_user_nodes_by_parent(request = request, db = db, parent_id=int(parent_id))

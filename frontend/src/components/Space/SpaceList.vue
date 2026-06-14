@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
-import { fetchSpaceList } from '@/api/space/spaceList'
+import { getNodeSpaceList } from '@/api/node/nodeSpaceList'
 
 
 const props = defineProps({
@@ -14,17 +14,17 @@ const error = ref(null)
 
 const loadSpaces = async () => {
   // fetch list of spaces for current user
-  const res = await fetchSpaceList()
+  const res = await getNodeSpaceList('0')
 
   // create a faile loader class to hangle UI for errors
   if (res.error) { error.value = res.error; return }
 
-  spaces.value = res.data.spaceList
+  spaces.value = res.data.nodeList
+  console.log(spaces.value)
 }
 
 // sort spaces based on its id
 const sortedSpaces = computed(() => {
-  console.log("sorting spaces with order: ")
   if (props.sortOrder === 'asc') return spaces.value
   return [...spaces.value].sort((a, b) => b.id.localeCompare(a.id))
 })
@@ -40,7 +40,7 @@ defineExpose({ loadSpaces })
         <div class="space__wrapper">
           <div class="space__dot"></div>
           <div>
-            <p class="space__title">{{ space.title }}</p>
+            <p class="space__title">{{ space.name }}</p>
             <!-- <p class="space__meta">{{ space.id }}</p> -->
           </div>
         </div>

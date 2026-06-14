@@ -1,26 +1,49 @@
 # controller/graph_render.py
+
 from fastapi.routing import APIRouter
-from fastapi import Depends
+from fastapi import Depends, Request
 from common.db.session import DB, AsyncSession
-from representation_engin.main import generate_graph
-from service.node_relations_service import get as get_node_relations
-# from service.node_service import get as get_node
 from common.response.default import CommonResponse
-from service.space_service import get as get_space, get_nodes_by_space
+from representation_engin.generate_graph import generate_graph
+
+# from service.node_service import get as get_node
+# from service.node_relations_service import get as get_node_relations
+# from service.space_service import get as get_space, get_nodes_by_space
+from service.node_service import get_user_nodes_by_parent, get_user_node, get_node_correlation
 
 router = APIRouter(prefix='/api')
 
-CURRENT_USER_ID = "1"  # mock, replace with JWT later
+@router.get("/graph/{space_id}")
+async def get_graph(request: Request, space_id: str, db: AsyncSession = Depends(DB.get_session)) -> CommonResponse:
+    root_node = await get_user_node(request=request, node_id=space_id, db=db)
+    if root_node.code != 200:
+        return CommonResponse.response(code=401, message="Node is not exists for this user")
+        
+    # get user nodes by ancesstors
+    nodes = await get_user_nodes_by_parent(request= request, parent_id=int(space_id), db=db)
 
-@router.get("/graph/{spaceId}")
-async def get_graph(spaceId: str, db: AsyncSession = Depends(DB.get_session)) -> CommonResponse:
-    relations = await get_node_relations(spaceId=spaceId, db=db)
-    space = await get_space(id=spaceId, userId=CURRENT_USER_ID, db=db)
-    nodes = await get_nodes_by_space(spaceId=spaceId, db=db)
+    if nodes.code != 200:
+        return CommonResponse.response(code=401, message="Node is not exists for this user")
+    
+    correlation = await get_node_correlation(space_id, nodes.data, db)
+
+    if correlation.code != 200:
+        return CommonResponse.response(code=401, message="correlation is not exists")
+    
+
+    root_node = root_node.data
+    nodes = nodes.data
+    correlation = correlation.data
+    
+
+    print("root_node",root_node)
+    print("nodes",nodes)
+    print("correlation", correlation)
     
     graph_data = generate_graph(
-        relations.data,
-        nodes_map=nodes,
-        space_title=space.data.title
+        root=root_node,
+        nodes=nodes,
+        correlations=correlation
     )
+
     return CommonResponse.success(data=graph_data)

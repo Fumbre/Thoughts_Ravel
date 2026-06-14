@@ -1,33 +1,38 @@
 from pydantic import BaseModel
 from typing import TypeVar, Optional, Generic, Type, Callable, Any
 
-class NodeRequest(BaseModel):
+
+class NodeSpaceRequest(BaseModel):
     name: str
-    desc: Optional[str] = None
-    positionX: float
-    positionY: float
-    color: str
+    parent_id: int
+    ancestor:  Optional[str] = '0'
+    description: Optional[str] = None
+    type: str
+    position_x: float
+    position_y: float
     shape: str
-    creater_id: int
+    color: str
 
-class NodeParentRequest(BaseModel):
-    nodeId: int
-    spaceId: int
-    userId: int
-    public_status: str
+class NodeSpaceListRequest(BaseModel):
+    nodeSpaceList: Optional[list[NodeSpaceRequest]]
 
-class NodeListRequest(BaseModel):
-    nodeList: Optional[list[NodeRequest]]
+class NodePositionUpdateRequest(BaseModel):
+    id: str
+    position_x: float
+    position_y: float
 
-
-class NodeConnectionRequest(BaseModel):
+class NodeEdgeRequest(BaseModel):
+    space_id: int
     name: str
-    desc: Optional[str]
-    positionX: float
-    positionY: float
-    color: str
+    description: Optional[str] = None
+    type: str
     shape: str
-    creater_id: str
-    nodeId: str
-    spaceId: str
-    userId: str
+    color: str
+    parent_node_id: int
+    parent_pos_x: float
+    parent_pos_y: float
+    label: Optional[str]
+
+class NodeEdgeListRequest(BaseModel):
+    nodeEdgeList: Optional[list[NodeEdgeRequest]]
+    

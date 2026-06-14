@@ -1,11 +1,28 @@
 import { apiBaseFetch } from "../../tools/api"
 import { ApiResponse } from '../response'
 
+interface IPostSpaceList {
+    space_id: string,
+    name: string,
+    parent_node_id: string,
+    description: string | null,
+    type: string,
+    position_x: number,
+    position_y: number,
+    shape: string,
+    color: string,
+}
 
-// get space list
-export const fetchSpaceList = async (): Promise<ApiResponse<any>> => {
+// post node space list
+export const postNodeSpaceList = async (list: Array<IPostSpaceList>): Promise<ApiResponse<any>> => {
     try {
-        const res = await apiBaseFetch('/api/space', { credentials: 'include' })
+        const res = await apiBaseFetch('/api/space', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                nodeSpaceList: list
+            })
+        })
         if (!res.ok) throw new Error('Backend not responding')
         const json = await res.json()
         return json
@@ -16,30 +33,9 @@ export const fetchSpaceList = async (): Promise<ApiResponse<any>> => {
     }
 }
 
-interface IPostSpaceList {
-    name: string,
-    parent_id: string,
-    description: string | null,
-    type: string,
-    position_x: number,
-    position_y: number,
-    shape: string,
-    color: string,
-}
-
-// post space list
-export const postNodeSpaceList = async (list: Array<IPostSpaceList>): Promise<ApiResponse<any>> => {
+export const getNodeSpaceList = async (parent_id: string): Promise<ApiResponse<any>> => {
     try {
-        console.log(list)
-        console.log("fasdfas fkashdf lkjahsdf lk")
-        const res = await apiBaseFetch('/api/space', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                nodeSpaceList: list
-            }),
-            credentials: 'include'
-        })
+        const res = await apiBaseFetch(`/api/space?parent_id=${parent_id}`)
         if (!res.ok) throw new Error('Backend not responding')
         const json = await res.json()
         return json

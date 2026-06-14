@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import SpaceCreationModal from '@/components/Space/SpaceCreationModal.vue'
+import LogoutBtn from '@/components/buttons/LogoutBtn.vue'
 import SpaceList from '@/components/Space/SpaceList.vue'
 
 // space creation modal window
@@ -20,6 +21,11 @@ const onSpaceCreated = () => {
 </script>
 
 <template>
+  <div class="container">
+    <div class="user">
+      <LogoutBtn />
+    </div>
+  </div>
   <div class="spaces__container container">
     <div class="spaces__top">
       <div class="spaces__header">
@@ -30,12 +36,15 @@ const onSpaceCreated = () => {
         + New space
       </button>
       <nav class="spaces__sort sort">
-        <ul class="sort__list">
-          <li class="sort__item">
-            <button @click="sortOrder = 'asc'" :class="{ 'sort__item--active': sortOrder === 'asc' }">asc</button>
+        <ul class="sort__list list">
+          <li class="sort__item ">
+            <button @click="sortOrder = 'asc'" :class="['btn ', {
+              'sort__item--active': sortOrder === 'asc'
+            }]">asc</button>
           </li>
           <li class="sort__item">
-            <button @click="sortOrder = 'desc'" :class="{ 'sort__item--active': sortOrder === 'desc' }">desc</button>
+            <button @click="sortOrder = 'desc'"
+              :class="['btn ', { 'sort__item--active': sortOrder === 'desc' }]">desc</button>
           </li>
         </ul>
       </nav>
@@ -49,10 +58,6 @@ const onSpaceCreated = () => {
 
 
 <style scoped>
-.spaces__container {
-  padding: 2rem 1.5rem;
-}
-
 .spaces__top {
   display: flex;
   align-items: flex-start;
@@ -77,6 +82,14 @@ const onSpaceCreated = () => {
   justify-content: space-between;
   width: 100%;
   text-decoration: none;
+}
+
+.sort__item:not(:last-child) {
+  margin-bottom: 5px;
+}
+
+.sort__item--active {
+  background-color: #4f7ef8;
 }
 
 .btn-create {

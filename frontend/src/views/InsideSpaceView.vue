@@ -1,60 +1,172 @@
 <script setup>
-import { useRouter } from 'vue-router'
-import { ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { ref, computed, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import NodeModal from '@/components/Node/NodeModal.vue'
 import GraphCanvas from '@/components/Graph/GraphCanvas.vue'
-import { postNodeToNode } from '../api/node/node'
+import { postNodeEdge, updateNodePos } from '@/api/node/node'
+import { apiBaseFetch } from '../tools/api'
+
 
 const route = useRoute()
-const spaceId = route.params.id
+const router = useRouter()
+const spaceId = computed(() => route.params.id)
 
 const editMode = ref(false)
-const selectedNodeId = ref(null)
-const selectedNodeName = ref(null)
+const selectedNode = ref(null)
 
-const onNodeClick = (nodeId) => {
+const graphCanvas = ref(null)
+
+const onNodeClick = (node) => {
     if (editMode.value) {
         // select node for editing, no navigation
-        selectedNodeId.value = nodeId
+        selectedNode.value = node
         // you'll fetch node name here later
-        selectedNodeName.value = nodeId  // temp, replace with actual name
+        console.log(selectedNode.value)
     } else {
+        console.log(node.id)
         // navigate to node page
-        route.push(`/node/${nodeId}`)
+        if (node.id)
+            router.push(`/space/${node.id}`)
     }
 }
-const onNodeMoved = ({ id, x, y }) => {
+const onNodeMoved = async ({ id, x, y }) => {
     console.log('node moved:', id, x, y)
+    try {
+        const res = await updateNodePos(id, x, y)
+    } catch (error) {
+        console.log(error)
+    }
     // save position to DB later
 }
 
+const showModal = ref(false)
+
 const addNode = () => {
-    const testChild = {
-        name: 'my nanme',
-        desc: 'string | null',
-        positionX: 23,
-        positionY: 23,
-        color: "blue",
-        shape: "circle",
-        creater_id: 1,
-    }
-
-    const testParent = {
-        nodeId: "7463519295578836993",
-        spaceId: "7463520655892287488",
-        userId: "1",
-    }
-
-
-    const re = postNodeToNode(testChild, testParent)
-    console.log("[insdie space view]", re)
+    showModal.value = true
 }
+
+const handleConfirm = async (data) => {
+    showModal.value = false
+    console.log(data)
+
+
+    const node = [{
+        space_id: spaceId.value,
+        name: data.name,
+        description: data.description,
+        type: '0',
+        shape: 'circle',
+        color: `${data.color}`,
+        parent_node_id: selectedNode.value.id,
+
+        parent_pos_x: selectedNode.value.x,
+        parent_pos_y: selectedNode.value.y,
+        label: data.description
+    }]
+
+    try {
+        const re = await postNodeEdge(node)
+
+        console.log(re)
+
+        if (re.code === 200 && re.data) {
+            const nodes = Array.isArray(re.data) ? re.data : [re.data]
+            nodes.forEach(n => graphCanvas.value.addNode(n))
+        }
+        console.log("[insdie space view]", node)
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+
+const userInput = ref('')
+const aiResponse = ref('')
+const isLoading = ref(false)
+
+// The function that handles the form submission
+const handleChatSubmit = async () => {
+    // Don't send empty requests
+    if (!userInput.value.trim()) return
+
+    isLoading.value = true
+    try {
+        // Replace this URL with your actual custom API endpoint
+        const response = await apiBaseFetch(`/ai/chat/${spaceId.value}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ prompt: userInput.value }),
+        })
+
+        const data = await response.json()
+        console.log(data)
+        if (data.code != 200)
+            throw new Error(`couldn't get AI response code: ${data.code}`);
+
+        aiResponse.value = data.data
+        console.log(aiResponse.value)
+
+        // Clear the input field after sending
+        userInput.value = ''
+    } catch (error) {
+        console.error('Failed to chat with AI:', error)
+    } finally {
+        isLoading.value = false
+    }
+}
+
+const spaceName = ref('Loading...')
+const loadSpaceDetails = async (id) => {
+    if (!id) return
+    try {
+        const response = await apiBaseFetch(`/api/node/${id}`)
+        const resData = await response.json()
+
+        console.log(resData)
+
+        if (resData && resData.data) {
+            // Adjust this property path to match whatever column holds your title (e.g., resData.data.name)
+            spaceName.value = resData.data.name || `Space #${id}`
+        }
+    } catch (error) {
+        console.error('Failed to resolve space metadata name:', error)
+        spaceName.value = 'Unknown Space'
+    }
+}
+
+watch(
+    () => route.params.id,
+    (newId) => {
+        loadSpaceDetails(newId)
+    },
+    { immediate: true }
+)
 
 </script>
 
 <template>
+    <NodeModal v-if="showModal" @confirm="handleConfirm" @cancel="showModal = false" />
+
+
+
+
     <div class="inside-space__container container">
-        <h2>inside space: {name of the space}</h2>
+        <h2>Inside space: {{ spaceName }}</h2>
+        <div class="ai ">
+            <form @submit.prevent="handleChatSubmit">
+                <label>
+                    <span>chat with AI asistnet: </span>
+                    <input v-model="userInput" type="text" placeholder="Type your message..." :disabled="isLoading">
+                </label>
+                <input type="submit" :value="isLoading ? 'Sending...' : 'send'" :disabled="isLoading">
+            </form>
+            <br>
+            <div v-if="aiResponse" class="response-box">
+                <strong>AI:</strong> {{ aiResponse }}
+            </div>
+        </div>
         <div class="node__editor flex">
             <label class="node__editor-label flex">
                 <span class="node__editor-text">Editor mode</span>
@@ -65,7 +177,7 @@ const addNode = () => {
     </div>
 
     <div class="graphic">
-        <GraphCanvas :spaceId="spaceId" @nodeClick="onNodeClick" @nodeMoved="onNodeMoved" />
+        <GraphCanvas ref="graphCanvas" :spaceId="spaceId" @nodeClick="onNodeClick" @nodeMoved="onNodeMoved" />
     </div>
     <div class="inside-space__container container">
 
@@ -73,7 +185,7 @@ const addNode = () => {
             <h3>Actions on specific node</h3>
             <ul class="panel-edit-node__list">
                 <li class="panel-edit-node__item">
-                    <span>selected node: {{ selectedNodeName ?? 'Node is not selected' }}</span>
+                    <span>selected node: {{ selectedNode?.label ?? 'Node is not selected' }}</span>
                 </li>
                 <li class="panel-edit-node__item">
                     <button class="btn-green-light" @click="addNode">add node</button>
@@ -96,7 +208,6 @@ const addNode = () => {
                     <button class="btn-red">remove al lot of nodes</button>
                 </li>
             </ul>
-            <button class="btn-accept">save your changes</button>
         </div>
 
 
