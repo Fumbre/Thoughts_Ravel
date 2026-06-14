@@ -32,7 +32,6 @@ interface IPostNodeEdge {
 
 export const postNodeEdge = async (list: Array<IPostNodeEdge>): Promise<ApiResponse<any>> => {
     try {
-        console.log(list)
         const res = await apiBaseFetch('/api/node', {
             method: "POST",
             headers: { 'Content-Type': 'application/json' },
@@ -66,7 +65,6 @@ export const updateNodePos = async (
         })
         if (!res.ok) throw new Error('Backend not responding')
         const json = await res.json()
-        console.log(json.data)
         return json
     } catch (err: unknown) {
         return {

@@ -9,7 +9,7 @@ import json
 class ApiFilter(BaseHTTPMiddleware):
 
     async def dispatch(self, request: Request, call_next):
-        white_list = ["/auth/login", "/auth/register", "/ai/chat"]
+        white_list = ["/auth/login", "/auth/register"]
         try :
 
             if request.url.path in white_list:

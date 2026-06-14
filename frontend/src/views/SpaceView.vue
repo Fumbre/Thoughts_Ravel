@@ -36,12 +36,15 @@ const onSpaceCreated = () => {
         + New space
       </button>
       <nav class="spaces__sort sort">
-        <ul class="sort__list">
-          <li class="sort__item">
-            <button @click="sortOrder = 'asc'" :class="{ 'sort__item--active': sortOrder === 'asc' }">asc</button>
+        <ul class="sort__list list">
+          <li class="sort__item ">
+            <button @click="sortOrder = 'asc'" :class="['btn ', {
+              'sort__item--active': sortOrder === 'asc'
+            }]">asc</button>
           </li>
           <li class="sort__item">
-            <button @click="sortOrder = 'desc'" :class="{ 'sort__item--active': sortOrder === 'desc' }">desc</button>
+            <button @click="sortOrder = 'desc'"
+              :class="['btn ', { 'sort__item--active': sortOrder === 'desc' }]">desc</button>
           </li>
         </ul>
       </nav>
@@ -79,6 +82,14 @@ const onSpaceCreated = () => {
   justify-content: space-between;
   width: 100%;
   text-decoration: none;
+}
+
+.sort__item:not(:last-child) {
+  margin-bottom: 5px;
+}
+
+.sort__item--active {
+  background-color: #4f7ef8;
 }
 
 .btn-create {

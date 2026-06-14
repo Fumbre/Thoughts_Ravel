@@ -1,4 +1,5 @@
 from fastapi.routing import APIRouter
+from fastapi import Request
 from common.response.default import CommonResponse
 from common.filter.user import get_current_user
 from fastapi import Response, Request
@@ -10,10 +11,16 @@ class ChatRequest(BaseModel):
 
 router = APIRouter(prefix='/ai')
 
-@router.post('/chat')
-async def chat( body: ChatRequest) -> CommonResponse:
-    # user = get_current_user(request)
+@router.post('/chat/{root_node_id}')
+async def chat(req: Request, body: ChatRequest, root_node_id: str) -> CommonResponse:
+    user = get_current_user(req)
+    root_node_id = root_node_id
+
+    if user is None:
+        return CommonResponse.faild(message="user not found")
+
+    body.prompt = f"{body.prompt} The user_id:{user["id"]}, rood_node_id: {root_node_id}"
     
-    result = AiAgent.chat(prompt=body.prompt)
+    result = await AiAgent.chat(prompt=body.prompt)
 
     return CommonResponse.success(data=result)

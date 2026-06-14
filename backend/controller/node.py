@@ -23,7 +23,8 @@ async def updateNodePos(body: NodePositionUpdateRequest)-> CommonResponse:
 
 
 @router.post('/node')
-async def postNodeEdge(request: Request, body: NodeEdgeListRequest) -> str:
+async def postNodeEdge(request: Request, body: NodeEdgeListRequest) -> CommonResponse:
+    print(request)
     mapped_space_nodes = []
     
     for edge in (body.nodeEdgeList or []):  # Use the exact list field name from your request model
@@ -46,9 +47,14 @@ async def postNodeEdge(request: Request, body: NodeEdgeListRequest) -> str:
         return CommonResponse.faild()
     
     result = await make_node_edge(created_nodes.data, body)
+    if result.code != 200:
+        return CommonResponse.faild()
+    
+    result = result.data
 
-    print("finale,")
-    return "return result for updating reactivly"
+    # print(result)
+
+    return CommonResponse.success(data=result)
 
 @router.post('/space')
 async def createNodeSpace(request: Request, body: NodeSpaceListRequest) -> CommonResponse:

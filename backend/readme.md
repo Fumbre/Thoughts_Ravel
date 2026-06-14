@@ -9,4 +9,6 @@
 'rc' = read private
 
 
+sudo systemctl enable --now valkey
+
 valkey-cli

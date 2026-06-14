@@ -1,4 +1,4 @@
-from sqlalchemy import select, and_, update
+from sqlalchemy import select, and_, update, func
 # from request.space_request import SpaceRequest, SpaceListRequest
 from decorators.decor import Transactional
 from model.node import Nodes
@@ -17,10 +17,12 @@ from fastapi import Request
 
 
 @Transactional
-async def insert(request: NodeSpaceListRequest, db: AsyncSession, req: Request) -> CommonResponse[NodeListResponse]:
+async def insert(request: NodeSpaceListRequest, db: AsyncSession, req: Request = None, user_id: int = None) -> CommonResponse[NodeListResponse]:
     nodeSpace: NodeSpaceRequest = request.nodeSpaceList[0]
 
-    user = get_current_user(req)
+    if user_id is None:
+        user = get_current_user(req)
+        user_id = user["id"]
 
     ancestor = '0'
 
@@ -37,7 +39,7 @@ async def insert(request: NodeSpaceListRequest, db: AsyncSession, req: Request) 
         id = getId()
         nodeSpaceItem = Nodes(**nodeSpaceItem.model_dump())
         nodeSpaceItem.id = id
-        nodeSpaceItem.creater_id = user["id"]
+        nodeSpaceItem.creater_id = user_id
         nodeSpaceItem.ancestor = ancestor
         # nodeSpaceItem.position_x = position_x or nodeSpaceItem.position_x
         # nodeSpaceItem.position_y = position_y or nodeSpaceItem.position_y
@@ -80,9 +82,19 @@ async def get_user_node(request: Request, node_id: int, db: AsyncSession) -> Nod
 
     return CommonResponse.success(data=result)
 
+async def get_user_nodes(user_id: int, db: AsyncSession) -> CommonResponse:
+
+    result = await db.scalar(
+        select(func.count(Nodes.id)).where(Nodes.creater_id == user_id)
+    )
+    
+    # Fallback to 0 if the query somehow returns None
+    count_value = result or 0
+
+    return CommonResponse.success(data=count_value)
+
 @Transactional
 async def make_node_edge(nodes: NodeListResponse, edges: NodeEdgeListRequest, db: AsyncSession) -> CommonResponse:
-    
     correlations_to_add = [
         NodeCorrelations(
             parent_node_id=edge.parent_node_id,
@@ -93,13 +105,26 @@ async def make_node_edge(nodes: NodeListResponse, edges: NodeEdgeListRequest, db
         for edge in (edges.nodeEdgeList or [])
     ]
 
-    # Stage and save the records inside your current transactional block
     if correlations_to_add:
         db.add_all(correlations_to_add)
         await db.flush()
 
+    result = [
+    {
+        "id": str(node.id),
+        "name": node.name,
+        "color": node.color,
+        "shape": node.shape,
+        "position_x": node.position_x,
+        "position_y": node.position_y,
+        "parent_node_id": str(edge.parent_node_id), 
+    }
+    for node, edge in zip(nodes.nodeList or [], edges.nodeEdgeList or [])
+]
 
-    return CommonResponse.success()
+    print("bla bla",result)
+
+    return CommonResponse.success(data=result)
 
 
 async def get_node_correlation(root_id: str, nodes: NodeListResponse, db: AsyncSession) -> CommonResponse[NodeCorrelationsListResponse]:
@@ -130,8 +155,6 @@ async def get_node_correlation(root_id: str, nodes: NodeListResponse, db: AsyncS
         NodeCorrelationResponse.model_validate(c) for c in correlations_orm
     ]
 
-    print("testing:", visible_node_ids)
-    
     return CommonResponse.success(data=NodeCorrelationsListResponse(nodeCorrelationsList=validated_correlations))
 
 

@@ -20,6 +20,12 @@ body {
 	margin: 0 0 15px;
 }
 
+.list {
+	margin: 0;
+	padding: 0;
+	list-style-type: none;
+}
+
 .main {
 	position: relative;
 }

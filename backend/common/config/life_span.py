@@ -7,7 +7,7 @@ import os
 from common.security.token import Token
 from common.redis.redis import Redis
 from ai_agent.ai_agent import AiAgent
-from ai_agent.tools import get_nodes
+from ai_agent.tools import get_nodes, create_nodes
 
 load_dotenv()
 DB_DRIVER = os.getenv("DB_DRIVER", "")
@@ -31,7 +31,9 @@ async def lifespan(db: FastAPI):
     DB.init(DB_DRIVER, DB_IP, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD, '', DB_LOG)
     Token.init(TOKEN)
     Redis.init(REDIS_IP, REDIS_PORT, REDIS_DB, REDIS_PASSWORD)
-    AiAgent.init('qwen3:8b', [get_nodes], 0.1)
+    AiAgent.init('gpt-oss:120b-cloud', [get_nodes,create_nodes], 0.1)
+    # AiAgent.init('qwen3:8b', [get_nodes], 0.1)
+    
     yield
     await Redis.close()
     await DB.close()

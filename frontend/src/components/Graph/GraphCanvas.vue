@@ -1,26 +1,29 @@
 <script setup>
 import { ref, onMounted, watch, nextTick } from 'vue'
-import { Network } from 'vis-network/standalone'
-import { apiBaseFetch } from '@/tools/api'
+import { Network, DataSet } from 'vis-network/standalone'
 import { fetchGraph } from '@/api/graph/graph'
-// import { getNodeById } from '@/api/node/node'
 
 const props = defineProps({
     spaceId: { type: String, required: true }
 })
-
 const emit = defineEmits(['nodeClick', 'nodeMoved'])
-
 const graphElement = ref(null)
 const error = ref(null)
-let network = null
 
+let network = null
+let nodesDataset = null
+let edgesDataset = null
 let rawNodesReference = []
 
 const initNetwork = (data) => {
     rawNodesReference = data.nodes || []
+    nodesDataset = new DataSet(data.nodes || [])
+    edgesDataset = new DataSet(data.edges || [])
 
-    network = new Network(graphElement.value, data, {
+    network = new Network(graphElement.value, {
+        nodes: nodesDataset,
+        edges: edgesDataset
+    }, {
         physics: { enabled: false },
         edges: {
             smooth: { enabled: true, type: 'continuous', roundness: 0.5 }
@@ -30,14 +33,10 @@ const initNetwork = (data) => {
 
     network.on('click', ({ nodes }) => {
         const clickedNodeId = nodes[0]
-
         const fullNodeData = rawNodesReference.find(n => String(n.id) === String(clickedNodeId))
-
         if (fullNodeData) {
-            // Emit the entire matching dictionary object up to the parent layer
             emit('nodeClick', fullNodeData)
         } else {
-            // Fallback: emit the raw ID if lookups fail
             emit('nodeClick', { id: clickedNodeId })
         }
     })
@@ -48,6 +47,27 @@ const initNetwork = (data) => {
             emit('nodeMoved', { id: nodes[0], ...pos })
         }
     })
+}
+
+const addNode = (node) => {
+    if (!nodesDataset) return
+    const visNode = {
+        id: String(node.id),
+        label: node.name,
+        color: node.color,
+        shape: node.shape,
+        x: node.position_x,
+        y: node.position_y,
+    }
+    nodesDataset.add(visNode)
+    rawNodesReference.push(visNode)  // keep reference in sync
+
+    if (node.parent_node_id && String(node.parent_node_id) !== '0') {
+        edgesDataset.add({
+            from: String(node.parent_node_id),
+            to: String(node.id),
+        })
+    }
 }
 
 const loadGraph = async () => {
@@ -62,11 +82,12 @@ const loadGraph = async () => {
 }
 
 watch(() => props.spaceId, loadGraph, { immediate: true })
-
 onMounted(() => {
     const observer = new ResizeObserver(() => network?.redraw())
     if (graphElement.value) observer.observe(graphElement.value)
 })
+
+defineExpose({ addNode })
 </script>
 
 <template>
