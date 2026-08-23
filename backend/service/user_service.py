@@ -88,13 +88,13 @@ async def logout(request: Request, response: Response) -> CommonResponse:
     
     return CommonResponse.success(message="Logged out")
 
+expired_delta = 450
 
-async def createToken(payload: dict, response: Response) -> str:
-    expired_time = 60*60
+async def createToken(payload: dict, response: Response, expired_time: int = expired_delta) -> str:
 
     time_stamp = datetime.datetime.now().timestamp()
     payload["time_stamp"] = time_stamp
-    token = Token.create_access_token(payload)
+    token = Token.create_access_token(payload, expired_time)
 
     if "password" in payload.keys() :
         del payload["password"] # delete password for security

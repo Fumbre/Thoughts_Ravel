@@ -24,6 +24,11 @@ const initNetwork = (data) => {
         nodes: nodesDataset,
         edges: edgesDataset
     }, {
+        nodes: {
+            font: {
+                color: '#ffffff'
+            }
+        },
         physics: { enabled: false },
         edges: {
             smooth: { enabled: true, type: 'continuous', roundness: 0.5 }

@@ -20,14 +20,16 @@ class Token:
         return cls._instance
 
     @classmethod
-    def create_access_token(cls, data: dict) -> str:
+    def create_access_token(cls, data: dict, expires_delta: int = 3600) -> str:
         """Generates a JWT token containing the payload data."""
         to_encode = data.copy()
-        
-        
-        # Encode and return the JWT
+
+        expire = datetime.now(timezone.utc) + timedelta(seconds=expires_delta)
+        to_encode["exp"] = expire
+
         encoded_jwt = jwt.encode(to_encode, cls._secret_key, algorithm=ALGORITHM)
         return encoded_jwt
+
 
     @classmethod
     def verify_access_token(cls, token: str) -> dict | None:
