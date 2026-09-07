@@ -22,3 +22,22 @@
 1. poetry install
 2. poetry run uvicorn main:app --reload --port 8080
 
+
+about the LLM_TR folder 
+
+here will be created your own local ai identity
+this folder contains your personal data
+
+
+These are your manually controlled files:
+
+llm_soul/
+├── identity.txt
+├── principles.txt
+├── behavior.txt
+├── checklist.txt
+└── response_rules.txt
+
+These should be relatively stable. Give the model a playground to test how overwriting this files in copyed statement improves logic testing thinking time.
+
+
